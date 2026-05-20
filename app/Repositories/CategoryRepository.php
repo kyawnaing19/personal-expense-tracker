@@ -7,7 +7,7 @@ class CategoryRepository
 {
     public function getAllByUser(int $userId)
     {
-        return Category::where('user_id', $userId)
+        return Category::where('user_id',$userId)
                         ->orWhereNull('user_id')
                         ->get();
     }
