@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\Category;
+use Illuminate\Support\Facades\Log;
 
 class CategoryRepository
 {
@@ -27,27 +28,13 @@ class CategoryRepository
 
     public function create(array $data)
     {
-        return Category::create(
-            [
-                'name'=>$data['name'],
-                'type'=>$data['type'],
-                'icon'=>$data['icon'],
-                'color'=>$data['color'],
-            ]
-        );
+       // Log::info('XXXXXXXXXxx',$data);
+        return Category::create($data);
     }
 
     public function update(Category $category, array $data)
     {
-        $category->update(
-            [
-                'name'=>$data['name'],
-                'type'=>$data['type'],
-                'icon'=>$data['icon'],
-                'color'=>$data['color'],
-            ]
-
-        );
+        $category->update($data);
         return $category;
     }
 
