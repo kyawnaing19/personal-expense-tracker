@@ -5,18 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Transaction extends Model
 {
     use HasUlids;
     protected $fillable = [
-        'user_id','name','type','icon','color','is_default',
+        'user_id','category_id','amount','type','note','transaction_date','receipt_path','recurring_id',
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function transactions()
+
+    public function category()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->belongsTo(Category::class);
     }
 }

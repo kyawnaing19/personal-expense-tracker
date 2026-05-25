@@ -9,6 +9,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -27,6 +28,9 @@ Route::prefix('v1')->group(function () {
         Route::put('categories/{id}', [CategoryController::class, 'update']);
         Route::post('categories', [CategoryController::class, 'store']);
         Route::delete('categories/{id}', [CategoryController::class, 'destory']);
+
+        //Transactions
+        Route::get('transactions',[TransactionController::class, 'index']);
     });
 
 });

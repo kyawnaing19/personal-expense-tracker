@@ -25,7 +25,7 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function show(Request $request,int $id):JsonResponse
+    public function show(Request $request,string $id):JsonResponse
     {
         $category=$this->categoryService->findById($id, $request->user()->id);
         if(!$category){
@@ -56,7 +56,7 @@ class CategoryController extends Controller
 
     }
 
-    public function update(UpdateCategoryRequest $request,int $id):JsonResponse
+    public function update(UpdateCategoryRequest $request,string $id):JsonResponse
     {
         try{
             $result=$this->categoryService->update(
@@ -79,7 +79,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function destory(Request $request,int $id):JsonResponse{
+    public function destory(Request $request,string $id):JsonResponse{
         try{
             $result=$this->categoryService->delete(
                 $id,

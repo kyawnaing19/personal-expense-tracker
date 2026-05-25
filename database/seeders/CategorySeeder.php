@@ -40,13 +40,17 @@ class CategorySeeder extends Seeder
             'is_default'=>true,'user_id'=>null],
 
         ];
-        Category::insert(array_map(function ($category,) {
-            return array_merge($category,
-            [
-                'created_at'=> now(),
-            'updated_at'=> now(),
-            ]);
+        // Category::insert(array_map(function ($category,) {
+        //     return array_merge($category,
+        //     [
+        //         'created_at'=> now(),
+        //     'updated_at'=> now(),
+        //     ]);
 
-        },$categories));
+        // },$categories));
+
+        foreach($categories as $category){
+            Category::create($category);
+        }
     }
 }

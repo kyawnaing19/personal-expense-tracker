@@ -11,18 +11,18 @@ class CategoryService
     )
     {}
 
-    public function getAll(int $userId)
+    public function getAll(string $userId)
     {
         return $this->categoryRepository->getAllByUser($userId);
     }
 
-    public function findById(int $id, int $userId,)
+    public function findById(string $id, string $userId,)
     {
         return $this->categoryRepository->findById($id, $userId);
 
     }
 
-    public function create(array $data, int $userId)
+    public function create(array $data, string $userId)
     {
         $data['user_id']=$userId;
         //Log::info('category data',$data);
@@ -30,7 +30,7 @@ class CategoryService
 
     }
 
-    public function update(int $id,array $data, int $userId)
+    public function update(string $id,array $data, string $userId)
     {
        $category=$this->categoryRepository->findById($id, $userId);
         if (!$category) {
@@ -45,7 +45,7 @@ class CategoryService
 
     }
 
-    public function delete(int $id,int $userId)
+    public function delete(string $id,string $userId)
     {
            $category=$this->categoryRepository->findById($id, $userId);
         if (!$category)

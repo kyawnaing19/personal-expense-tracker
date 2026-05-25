@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryRepository
 {
-    public function getAllByUser(int $userId)
+    public function getAllByUser(string $userId)
     {
         return Category::where('user_id',$userId)
                         ->orWhereNull('user_id')
                         ->get();
     }
 
-    public function findById(int $id, int $userId)
+    public function findById(string $id, string $userId)
     {
         return Category::where('id',$id)
                         // ->where('user_id',$userId)
@@ -41,9 +41,9 @@ class CategoryRepository
     public function delete(Category $category)
     {
 
-        // if ($category->transactions()->exists()) {
-        // throw new \Exception();
-        // }
+        if ($category->transactions()->exists()) {
+        throw new \Exception();
+        }
         $category->delete();
         return true;
     }
