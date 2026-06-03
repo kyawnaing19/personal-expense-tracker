@@ -35,8 +35,13 @@ return [
         ],
     ],
 
+    // 'google' => [
+    // 'client_id' => env('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'),
+    // ],
     'google' => [
-    'client_id' => env('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'),
+    'client_id'     => env('GOOGLE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    'redirect'      => env('GOOGLE_REDIRECT_URL'),
     ],
 
 ];

@@ -79,7 +79,7 @@ class CategoryController extends Controller
         }
     }
 
-    public function destory(Request $request,string $id):JsonResponse{
+    public function destroy(Request $request,string $id):JsonResponse{
         try{
             $result=$this->categoryService->delete(
                 $id,

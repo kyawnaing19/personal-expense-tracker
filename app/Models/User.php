@@ -12,8 +12,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasUlids;
     use HasApiTokens, Notifiable;
+    use HasFactory;
+    use HasUlids;
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
 
     protected $fillable = [
         'name',
@@ -23,6 +28,16 @@ class User extends Authenticatable
         'avatar',
         'fcm_token',
     ];
+
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->id;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
