@@ -10,6 +10,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BudgetController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,11 @@ Route::prefix('v1')->group(function () {
             Route::put('budgets/{id}','update');
 
         });
+
+        //report
+        Route::get('reports/summaries',[ReportController::class,'getSummary']);
+        Route::get('reports/category-breakdown',[ReportController::class,'getCategoryBreakdown']);
+        Route::get('reports/budgets-overview',[ReportController::class,'getBudgetOverview']);
 
     });
 
