@@ -41,6 +41,9 @@ class TransactionService
         if (!$transaction) {
             throw new \Exception('transaction not found!',404);
         }
+        if($transaction->status==='rejected'){
+            throw new \Exception('cannot update rejected transaction!',422);
+        }
         return $this->transactionRepository->update($transaction,$data);
 
     }
@@ -52,5 +55,29 @@ class TransactionService
             throw new \Exception('transaction not found!',404);
         }
         return $this->transactionRepository->delete($transaction);
+    }
+
+       public function accept(string $id, string $userId)
+    {
+        $transaction=$this->transactionRepository->findById($id,$userId);
+        if (!$transaction) {
+            throw new \Exception('transaction not found!',404);
+        }
+        if($transaction->status!=='pending'){
+            throw new \Exception('only pending transactions can be accepted!',422);
+        }
+        return $this->transactionRepository->update($transaction,['status'=>'confirmed']);
+    }
+
+    public function reject(string $id, string $userId)
+    {
+        $transaction=$this->transactionRepository->findById($id,$userId);
+        if (!$transaction) {
+            throw new \Exception('transaction not found!',404);
+        }
+        if($transaction->status!=='pending'){
+            throw new \Exception('only pending transactions can be rejected!',422);
+        }
+        return $this->transactionRepository->update($transaction,['status'=>'rejected']);
     }
 }

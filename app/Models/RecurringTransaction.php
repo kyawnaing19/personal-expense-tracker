@@ -3,28 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class RecurringTransaction extends Model
 {
-    use HasFactory;
     use HasUlids;
     protected $fillable = [
-        'user_id','category_id','amount','type','note','transaction_date','receipt_path','recurring_id',
+        'user_id','category_id','amount','type','note','start_date','end_date','frequency','next_run_date','is_active',
     ];
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
-    public function recurringTransaction()
+    public function transactions()
     {
-        return $this->belongsTo(Recurring_Transaction::class, 'recurring_id');
+        return $this->hasMany(Transaction::class, 'recurring_id');
     }
 }

@@ -1,16 +1,13 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Models\User;
 
 class TransactionRepository
 {
-    // public function getAllByUser(string $userId)
-    // {
-    //     return Transaction::where('user_id',$userId)->get();
 
-    // }
     public function getAllByUser(string $userId,array $filter=[]){
         $query=Transaction::where('user_id',$userId);
         if(!empty($filter['month']))
@@ -35,9 +32,21 @@ class TransactionRepository
     }
     public function findById(string $id,string $userId)
     {
-        return Transaction::where('id',$id)
+        $transaction=Transaction::where('id',$id)
                             ->where('user_id',$userId)
                             ->first();
+
+        return ['category_name' => $transaction->category->name,
+                'type' => $transaction->type,
+                'amount' => $transaction->amount,
+                'transaction_date' => $transaction->transaction_date,
+                'description' => $transaction->note,
+                'recurring_id' => $transaction->recurring_id,
+                'id' => $transaction->id,
+                'receipt_path' => $transaction->receipt_path,
+        ];
+
+
     }
 
     public function create(array $data)

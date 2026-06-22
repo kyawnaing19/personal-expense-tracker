@@ -11,16 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('recurring_transactions', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained();
             $table->foreignUlid('category_id')->constrained();
             $table->enum('type',['income','expense']);
             $table->bigInteger('amount');
             $table->string('note')->nullable();
-            $table->date('transaction_date');
-            $table->string('receipt_path')->nullable();
-            $table->foreignUlid('recurring_id')->nullable()->constrained('recurring_transactions')->nullOnDelete();
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
+            $table->enum('frequency',['daily','weekly','monthly']);
+            $table->date('next_run_date');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('recurring_transactions');
     }
 };
