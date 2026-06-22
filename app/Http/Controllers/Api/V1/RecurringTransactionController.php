@@ -58,7 +58,7 @@ class RecurringTransactionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], $e->getCode() ?: 400);
+            ],(int) $e->getCode() ?: 500);
         }
     }
     public function update(UpdateRecurringTransactionRequest $request, string $id): JsonResponse
@@ -76,7 +76,7 @@ class RecurringTransactionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], $e->getCode() ?: 400);
+            ],(int) $e->getCode() ?: 500);
         }
     }
 
@@ -93,7 +93,7 @@ class RecurringTransactionController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], $e->getCode() ?: 400);
+            ],(int) $e->getCode() ?: 500);
         }
     }
 }

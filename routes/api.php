@@ -10,6 +10,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BudgetController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\RecurringTransactionController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Routing\RouteRegistrar;
@@ -41,6 +42,19 @@ Route::prefix('v1')->group(function () {
             Route::delete('transactions/{id}', 'destroy');
             Route::post('transactions/{id}/receipt','uploadReceipt');
             Route::delete('transactions/{id}/receipt','deleteReceipt');
+            //Accept to recurring transaction
+            Route::post('transactions/{id}/accept','accept');
+            Route::post('transactions/{id}/reject','reject');
+        });
+
+        //recurring transactions
+        Route::controller(RecurringTransactionController::class)->group(function(){
+            Route::get('recurring-transactions','index');
+            Route::get('recurring-transactions/{id}','show');
+            Route::post('recurring-transactions','store');
+            Route::put('recurring-transactions/{id}','update');
+            Route::delete('recurring-transactions/{id}','destroy');
+
         });
 
         Route::controller(BudgetController::class)->group(function(){

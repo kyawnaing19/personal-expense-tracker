@@ -12,6 +12,7 @@ class ReportRepository
                             ->whereBetween('transaction_date',[
                                 $datarange['from'],$datarange['to']
                             ])
+                            ->where('status','confirmed')
                             ->selectRaw('
                             SUM(CASE WHEN type="income" THEN amount ELSE 0 END) as total_income,
                             SUM(CASE WHEN type="expense" THEN amount ELSE 0 END) as total_expense
@@ -32,6 +33,7 @@ class ReportRepository
                                 $datarange['from'],
                                 $datarange['to']
                             ])
+                            ->where('transactions.status','confirmed')
                             ->join('categories',
                             'transactions.category_id','=','categories.id'
                             )
@@ -94,6 +96,7 @@ class ReportRepository
                                 ->whereMonth('transaction_date',$month)
                                 ->whereYear('transaction_date',$year)
                                 ->where('type','expense')
+                                ->where('status','confirmed')
                                 ->groupBy('category_id')
                                 ->selectRaw('category_id,SUM(amount) as total')
                                 ->get()
