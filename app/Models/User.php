@@ -39,6 +39,13 @@ class User extends Authenticatable
         return $this->id;
     }
 
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_user')
+                    ->withPivot('role', 'joined_at')
+                    ->withTimestamps();
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

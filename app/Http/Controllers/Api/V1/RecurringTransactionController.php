@@ -17,14 +17,21 @@ class RecurringTransactionController extends Controller
 
     public function index(Request $request):JsonResponse
     {
-        $filters = $request->only([ 'category_id', 'type']);
-        $recurringTransactions = $this->recurringTransactionService->getAllByUser(
-            $request->user()->id, $filters);
+        try {
+            $filters = $request->only([ 'category_id', 'type']);
+            $recurringTransactions = $this->recurringTransactionService->getAllByUser(
+                $request->user()->id, $filters);
 
-        return response()->json([
-            'success' => true,
-            'data' => $recurringTransactions,
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $recurringTransactions,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ],(int) $e->getCode() ?: 500);
+        }
     }
 
     public function show(Request $request, string $id): JsonResponse

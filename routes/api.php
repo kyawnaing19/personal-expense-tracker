@@ -10,6 +10,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BudgetController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\GroupController;
 use App\Http\Controllers\Api\V1\RecurringTransactionController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -69,6 +70,16 @@ Route::prefix('v1')->group(function () {
         Route::get('reports/summaries',[ReportController::class,'getSummary']);
         Route::get('reports/category-breakdown',[ReportController::class,'getCategoryBreakdown']);
         Route::get('reports/budgets-overview',[ReportController::class,'getBudgetOverview']);
+
+        Route::get('groups', [GroupController::class, 'index']);
+        Route::post('groups', [GroupController::class, 'store']);
+        Route::get('groups/{id}', [GroupController::class, 'show']);
+        Route::put('groups/{id}', [GroupController::class, 'update']);
+        Route::delete('groups/{id}', [GroupController::class, 'destroy']);
+        Route::post('groups/{id}/members', [GroupController::class, 'addMember']);
+        Route::delete('groups/{id}/members/{userId}', [GroupController::class, 'removeMember']);
+        Route::post('groups/{id}/join-code', [GroupController::class, 'generateJoinCode']);
+        Route::post('groups/join', [GroupController::class, 'joinByCode']);
 
     });
 

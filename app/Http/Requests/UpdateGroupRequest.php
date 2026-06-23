@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class   StoreRecurringTransactionRequest extends FormRequest
+class UpdateGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,7 @@ class   StoreRecurringTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'note' => ['nullable', 'string'],
-            'start_date' => ['required', 'date'],
-            'frequency' => ['required', 'in:daily,weekly,monthly,']
+            'name'=>['sometimes', 'string', 'max:255']
         ];
     }
 }

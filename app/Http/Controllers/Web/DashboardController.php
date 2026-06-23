@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
-{
+// class DashboardController extends Controller
+// {
     public function __construct(
         private TransactionService $transactionService
     ) {}
@@ -35,4 +35,4 @@ class DashboardController extends Controller
             ],
         ]);
     }
-}
+//}

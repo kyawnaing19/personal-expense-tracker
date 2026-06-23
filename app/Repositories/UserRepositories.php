@@ -23,5 +23,9 @@ class UserRepositories
         $user->update(['fcm_token'=>$token]);
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
 
 }
