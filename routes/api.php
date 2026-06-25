@@ -58,6 +58,7 @@ Route::prefix('v1')->group(function () {
 
         });
 
+        //budget
         Route::controller(BudgetController::class)->group(function(){
             Route::get('budgets','index');
             Route::post('budgets','store');
@@ -71,6 +72,8 @@ Route::prefix('v1')->group(function () {
         Route::get('reports/category-breakdown',[ReportController::class,'getCategoryBreakdown']);
         Route::get('reports/budgets-overview',[ReportController::class,'getBudgetOverview']);
 
+
+        //group
         Route::get('groups', [GroupController::class, 'index']);
         Route::post('groups', [GroupController::class, 'store']);
         Route::get('groups/{id}', [GroupController::class, 'show']);
