@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BudgetController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\GroupController;
+use App\Http\Controllers\Api\V1\GroupExpenseController;
 use App\Http\Controllers\Api\V1\RecurringTransactionController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -83,6 +84,16 @@ Route::prefix('v1')->group(function () {
         Route::delete('groups/{id}/members/{userId}', [GroupController::class, 'removeMember']);
         Route::post('groups/{id}/join-code', [GroupController::class, 'generateJoinCode']);
         Route::post('groups/join', [GroupController::class, 'joinByCode']);
+
+
+        //groupExpense && Split
+        Route::get('groups/{groupId}/expenses', [GroupExpenseController::class, 'index']);
+        Route::post('group-expenses', [GroupExpenseController::class, 'store']);
+        Route::get('group-expenses/{id}', [GroupExpenseController::class, 'show']);
+        Route::put('group-expenses/{id}', [GroupExpenseController::class, 'update']);
+        Route::delete('group-expenses/{id}', [GroupExpenseController::class, 'destroy']);
+
+        Route::post('expense-splits/{splitId}/settle', [GroupExpenseController::class, 'settle']);
 
     });
 

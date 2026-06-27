@@ -42,7 +42,7 @@ use App\Models\GroupExpense;
         foreach($splits as $split)
         ExpenseSplit::create([
             'group_expense_id'=>$expenseId,
-            'user_id'=>$split['user'],
+            'user_id'=>$split['user_id'],
             'amount_owed'=>$split['amount_owed']
         ]);
     }
@@ -57,6 +57,11 @@ use App\Models\GroupExpense;
        return ExpenseSplit::where('group_expense_id',$expenseId)
                             ->where('user_id',$useId)
                             ->first();
+    }
+
+    public function findSplitById(string $splitId): ?ExpenseSplit
+    {
+        return ExpenseSplit::find($splitId);
     }
 
     public function getSplitsByExpense(string $expenseId)

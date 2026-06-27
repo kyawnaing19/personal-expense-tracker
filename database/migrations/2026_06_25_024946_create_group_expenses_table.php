@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('group_expenses', function (Blueprint $table) {
             $table->ulid('id')->primary();
             $table->foreignUlid('group_id')->constrained('groups')->cascadeOnDelete();
-            $table->foreignUlid('user_id')->constrained('users');
+            $table->foreignUlid('paid_by')->constrained('users');
             $table->foreignUlid('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->bigInteger('amount');
             $table->string('description')->nullable();
