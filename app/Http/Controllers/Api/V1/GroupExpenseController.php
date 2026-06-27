@@ -68,19 +68,17 @@ class GroupExpenseController extends Controller
             ], 201);
         } catch (\Exception $e) {
 
-            // ၁။ ကနဦးအနေနဲ့ ကိန်းပြည့် (int) ဖြစ်အောင် အတင်းပြောင်းယူမယ်
+
             $statusCode = (int) $e->getCode();
 
-            // ၂။ ရလာတဲ့ကောင်က HTTP Status Code အစစ် (၂၀၀ ကနေ ၅၉၉ ကြား) ဟုတ်မဟုတ် စစ်မယ်
-            // တကယ်လို့ 0 ဖြစ်နေရင်ဖြစ်ဖြစ်၊ 42 ဖြစ်နေရင်ဖြစ်ဖြစ်၊ String ကြောင့် လွဲနေရင်ဖြစ်ဖြစ် 500 လို့ သတ်မှတ်ပေးလိုက်မယ်
-            if ($statusCode < 200 || $statusCode >= 600) {
+                if ($statusCode < 200 || $statusCode >= 600) {
                 $statusCode = 500;
             }
 
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], $statusCode); // အခုဆိုရင် သေချာပေါက် valid ဖြစ်တဲ့ ကိန်းပြည့် (int) ပဲ ရောက်သွားမှာပါ
+            ], $statusCode);
         }
     }
 
