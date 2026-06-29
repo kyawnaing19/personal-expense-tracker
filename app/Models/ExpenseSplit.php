@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\Fluent\Concerns\Has;
+use League\OAuth1\Client\Server\Tumblr;
 
 class ExpenseSplit extends Model
 {
@@ -24,6 +25,8 @@ class ExpenseSplit extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    public function settlementRequests(){
+        return $this->hasMany(SettlementRequest::class);
+    }
 
 }

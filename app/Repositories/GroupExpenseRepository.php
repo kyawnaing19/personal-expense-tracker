@@ -52,10 +52,10 @@ use App\Models\GroupExpense;
         ExpenseSplit::where('group_expense_id',$expenseId)->delete();
     }
 
-    public function findSplit(string $expenseId, string $useId):?ExpenseSplit
+    public function findSplit(string $expenseId, string $userId):?ExpenseSplit
     {
        return ExpenseSplit::where('group_expense_id',$expenseId)
-                            ->where('user_id',$useId)
+                            ->where('user_id',$userId)
                             ->first();
     }
 
