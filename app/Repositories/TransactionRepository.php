@@ -32,21 +32,9 @@ class TransactionRepository
     }
     public function findById(string $id,string $userId)
     {
-        $transaction=Transaction::where('id',$id)
+        return Transaction::where('id',$id)
                             ->where('user_id',$userId)
                             ->first();
-
-        return ['category_name' => $transaction->category->name,
-                'type' => $transaction->type,
-                'amount' => $transaction->amount,
-                'transaction_date' => $transaction->transaction_date,
-                'description' => $transaction->note,
-                'recurring_id' => $transaction->recurring_id,
-                'id' => $transaction->id,
-                'receipt_path' => $transaction->receipt_path,
-        ];
-
-
     }
 
     public function create(array $data)
