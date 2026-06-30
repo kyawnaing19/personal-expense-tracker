@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\GroupExpense\ClaimPaymentRequest;
 use App\Http\Requests\GroupExpense\SettleSplitRequest;
 use App\Http\Requests\GroupExpense\StoreGroupExpenseRequest;
 use App\Http\Requests\GroupExpense\UpdateGroupExpenseRequest;
@@ -121,25 +122,90 @@ class GroupExpenseController extends Controller
         }
     }
 
-    public function settle(SettleSplitRequest $request, string $splitId): JsonResponse
+    // public function settle(SettleSplitRequest $request, string $splitId): JsonResponse
+    // {
+    //     try {
+    //         $split = $this->groupExpenseService->settle(
+    //             $splitId,
+    //             $request->validated('amount'),
+    //             $request->user()->id
+    //         );
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Payment recorded successfully',
+    //             'data' => $split,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $e->getMessage(),
+    //         ], (int) $e->getCode() ?: 500);
+    //     }
+    // }
+
+    public function ClaimPayment(ClaimPaymentRequest $request, string $splitId): JsonResponse
     {
-        try {
-            $split = $this->groupExpenseService->settle(
+        try{
+            $settlementRequest=$this->groupExpenseService->claimPayment(
                 $splitId,
                 $request->validated('amount'),
                 $request->user()->id
             );
 
             return response()->json([
-                'success' => true,
-                'message' => 'Payment recorded successfully',
-                'data' => $split,
-            ]);
-        } catch (\Exception $e) {
+                'success'=>true,
+                'message'=>'Payment claim summited, waiting for comfirmation',
+                'data'=>$settlementRequest
+
+            ],201);
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], (int) $e->getCode() ?: 500);
         }
+    }
+
+    public function confirmPayment(Request $request, string $requestId):JsonResponse
+    {
+        try{
+            $confirmPayment=$this->groupExpenseService->comfirmPayment(
+                $requestId,
+                $request->user()->id
+            );
+            return response()->json([
+                'success'=>true,
+                'message'=>'Payment confirm successfully',
+                'data'=>$confirmPayment,
+
+            ]);
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], (int) $e->getCode() ?: 500);
+        }
+    }
+
+    public function rejectPayment(Request $request, $requestId):JsonResponse
+    {
+        try{
+        $settlementRequest=$this->groupExpenseService->rejectPayment($requestId,
+        $request->user()->id);
+        return response()->json([
+            'success'=>true,
+            'message'=>'Payment reject successfully',
+            'data'=>$settlementRequest,
+        ]);
+        }catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], (int) $e->getCode() ?: 500);
+        }
+
     }
 }

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('amount');
             $table->enum('status',['pending','confirmed','rejected'])->default('pending');
             $table->foreignUlid('confirmed_by')->nullable()->constrained('users');
-            $table->timestamp('comfirmed_at');
+            $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
         });
     }

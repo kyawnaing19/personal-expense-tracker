@@ -5,6 +5,7 @@ use App\Models\Category;
 use App\Models\Transaction;
 use App\Repositories\CategoryRepository;
 use App\Repositories\TransactionRepository;
+use Carbon\Carbon;
 
 class TransactionService
 {
@@ -13,9 +14,54 @@ class TransactionService
         private CategoryRepository $categoryRepository
     )
     {}
-    public function getAll(string $userId,array $filters=[])
+
+    private function getDateRange(array $filters = []): array
     {
-        return $this->transactionRepository->getAllByUser($userId,$filters);
+        $filter = $filters['filter'] ?? 'this_month';
+
+        return match($filter) {
+            'last_three_month' => [
+                'from' => Carbon::now()->subMonths(3)->startOfMonth()->toDateString(),
+                'to'   => Carbon::now()->toDateString()
+            ],
+            'this_month' => [
+                'from' => Carbon::now()->startOfMonth()->toDateString(),
+                'to'   => Carbon::now()->endOfMonth()->toDateString()
+            ],
+            'last_month' => [
+                'from' => Carbon::now()->subMonth()->startOfMonth()->toDateString(),
+                'to'   => Carbon::now()->subMonth()->endOfMonth()->toDateString()
+            ],
+            'last_year' => [
+                'from' => Carbon::now()->subYear()->startOfYear()->toDateString(),
+                'to'   => Carbon::now()->subYear()->endOfYear()->toDateString()
+            ],
+            'custom' => [
+                'from' => $filters['from'] ?? Carbon::now()->startOfMonth()->toDateString(),
+                'to'   => $filters['to'] ?? Carbon::now()->endOfMonth()->toDateString()
+            ],
+            default => [
+                'from' => Carbon::now()->startOfMonth()->toDateString(),
+                'to'   => Carbon::now()->endOfMonth()->toDateString()
+            ]
+        };
+    }
+
+
+   public function getAll(string $userId, array $filters = [])
+    {
+
+        $dateRange = $this->getDateRange($filters);
+
+
+        $refinedFilters = [
+            'from'        => $dateRange['from'],
+            'to'          => $dateRange['to'],
+            'category_id' => $filters['category_id'] ?? null,
+            'type'        => $filters['type'] ?? null,
+        ];
+
+        return $this->transactionRepository->getAllByUser($userId, $refinedFilters);
     }
     public function findById(string $id,string $userId)
     {

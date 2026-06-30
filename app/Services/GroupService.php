@@ -101,12 +101,6 @@ class GroupService
         {
             throw new \InvalidArgumentException('Cannot remove the group creator', 400);
         }
-
-        // if(!$this->groupRepository->isMember($groupId, $targetUserId))
-        // {
-        //     throw new \InvalidArgumentException('User is not a member of this group', 404);
-        // }
-
         return $this->groupRepository->removeMember($groupId, $targetUserId);
     }
 

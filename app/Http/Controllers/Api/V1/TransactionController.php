@@ -19,7 +19,7 @@ class TransactionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['month', 'year', 'category_id', 'type']);
+        $filters = $request->only(['filter', 'from', 'to', 'category_id', 'type']);
         $transactions = $this->transactionService->getAll($request->user()->id, $filters);
 
         return response()->json([

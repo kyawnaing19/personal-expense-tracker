@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V1\GroupExpenseController;
 use App\Http\Controllers\Api\V1\RecurringTransactionController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\TransactionController;
-use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -92,8 +91,12 @@ Route::prefix('v1')->group(function () {
         Route::get('group-expenses/{id}', [GroupExpenseController::class, 'show']);
         Route::put('group-expenses/{id}', [GroupExpenseController::class, 'update']);
         Route::delete('group-expenses/{id}', [GroupExpenseController::class, 'destroy']);
+        //Settlement
+        Route::post('expense-splits/{splitId}/claim-payment', [GroupExpenseController::class, 'claimPayment']);
+        Route::post('settlement-requests/{requestId}/confirm', [GroupExpenseController::class, 'confirmPayment']);
+        Route::post('settlement-requests/{requestId}/reject', [GroupExpenseController::class, 'rejectPayment']);
 
-        Route::post('expense-splits/{splitId}/settle', [GroupExpenseController::class, 'settle']);
+
 
     });
 

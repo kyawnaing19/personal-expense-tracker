@@ -8,27 +8,18 @@ use App\Models\User;
 class TransactionRepository
 {
 
-    public function getAllByUser(string $userId,array $filter=[]){
-        $query=Transaction::where('user_id',$userId);
-        if(!empty($filter['month']))
-            {
-                $query->whereMonth('transaction_date',$filter['month']);
-            }
-        if(!empty($filter['year']))
-            {
-                $query->whereYear('transaction_date',$filter['year']);
-            }
-        if(!empty($filter['category_id']))
-            {
-                $query->where('category_id',$filter['category_id']);
-            }
-        if(!empty($filter['type']))
-            {
-                $query->where('type',$filter['type']);
-            }
+    public function getAllByUser(string $userId, array $filters = [])
+    {
+        $query = Transaction::where('user_id', $userId);
+        $query->whereBetween('transaction_date', [$filters['from'], $filters['to']]);
+        if (!empty($filters['category_id'])) {
+            $query->where('category_id', $filters['category_id']);
+        }
+        if (!empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
         return $query->orderBy('transaction_date', 'desc')->get();
-
-
     }
     public function findById(string $id,string $userId)
     {

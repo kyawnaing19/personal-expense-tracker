@@ -251,6 +251,7 @@ class GroupExpenseService
         if(!$split){
             throw new \Exception('Split record not found',404);
         }
+
         if($split->user_id !==$claimantId){
             throw new \Exception('you can pay only your own debt',403);
         }
@@ -275,5 +276,70 @@ class GroupExpenseService
                 'status'          =>'pending'
             ]);
 
+    }
+
+    public function comfirmPayment(string $requestId, String $confirmerId)
+    {
+        $settlementRequest=$this->settlementRequestRepository->findById($requestId);
+        if(!$settlementRequest){
+            throw new \Exception('Settlement request not found',404);
+        }
+        if($settlementRequest->status !== 'pending'){
+            throw new \Exception('the request has already been processed',422);
+        }
+
+        $split=$settlementRequest->expenseSplit;
+        $expense=$split->groupExpense;
+
+        if($expense->paid_by !== $confirmerId){
+            throw new \Exception('only the person who paid can confirm this payment',403);
+        }
+
+        return DB::transaction(function () use ($settlementRequest, $split, $confirmerId){
+            $remainingOwed=$split->amount_owed - $split->amount_paid;
+            if($settlementRequest->amount > $remainingOwed){
+                throw new \Exception(
+                    "Cannot Confirm: amount exceeds remaining owed amount of '{$remainingOwed}'"
+                ,422);
+            }
+            $newAmountPaid=$split->amount_paid + $settlementRequest->amount;
+            $isSettled=$newAmountPaid >= $split->amount_owed;
+            $this->expenseRepository->updateSplit($split,[
+                'amount_paid'=>$newAmountPaid,
+                'is_settled'=>$isSettled,
+                'settled_at'=>$isSettled ? now() :null,
+            ]);
+
+            return $this->settlementRequestRepository->update($settlementRequest,[
+                'status'=> 'confirmed',
+                'confirmed_by'=>$confirmerId,
+                'confirmed_at'=>now(),
+            ]);
+        });
+
+    }
+
+    public function rejectPayment(string $requestId, string $confirmerId)
+    {
+        $settlementRequest=$this->settlementRequestRepository->findById($requestId);
+        if(!$settlementRequest){
+            throw new \Exception('Settlement request not found',404);
+        }
+        if($settlementRequest->status !== 'pending'){
+            throw new \Exception('the request has already been processed',422);
+        }
+
+        $split=$settlementRequest->expenseSplit;
+        $expense=$split->groupExpense;
+
+        if($expense->paid_by !== $confirmerId){
+            throw new \Exception('only the person who paid can reject this payment',403);
+        }
+
+        return $this->settlementRequestRepository->update($settlementRequest,[
+            'status'=>'rejected',
+            'confirmed_by'=>$confirmerId,
+            'confirmed_at'=>now(),
+        ]);
     }
 }

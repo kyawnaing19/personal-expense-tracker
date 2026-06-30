@@ -10,14 +10,14 @@ class SettlementRequest extends Model
     use HasUlids;
     protected $fillable = [
         'expense_split_id','claimed_by','amount',
-        'status','comfirmed_by','comfirmed_at'
+        'status','confirmed_by','confirmed_at'
     ];
     public function expenseSplit()
     {
         return $this->belongsTo(ExpenseSplit::class);
     }
 
-    public function cliamant()
+    public function claimant()
     {
         return $this->belongsTo(User::class,'claimed_by');
 
