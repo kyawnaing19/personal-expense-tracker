@@ -342,4 +342,93 @@ class GroupExpenseService
             'confirmed_at'=>now(),
         ]);
     }
+
+
+    //getSummary for GpExpnese
+
+    public function getGroupBalance(string $groupId, string $userId){
+        if(!$this->groupRepository->isMember($groupId,$userId)){
+            throw new \Exception('you are not a member of this group',403);
+        }
+        $group=$this->groupRepository->findById($groupId);
+
+        $receivables=$this->expenseRepository->getReceivableSummary($groupId);
+        $payables=$this->expenseRepository->getPayableSummary($groupId);
+
+        return $group->members->map(function ($member) use ($receivables,$payables) {
+            return[
+                'user_id'=>$member->id,
+                'name'=>$member->name,
+                'toal_receivable'=>$receivables->get($member->id)->total_receivable ?? 0,
+                'total_payable'=>$payables->get($member->id)->total_payable ?? 0,
+
+            ];
+        })->values();
+    }
+
+    public function getBalanceDetail(string $groupId,string $tergetUserId,string $requesterId)
+    {
+        if(!$this->groupRepository->isMember($groupId,$requesterId)){
+            throw new \Exception('you are not a member of this group',403);
+        }
+        $debtorsDetails=$this->expenseRepository->getActiveDebtorDetail($tergetUserId);
+        $payerDetails=$this->expenseRepository->getActivePayerDetails($tergetUserId);
+
+        return [
+            'owed_to_others' => $debtorsDetails->map(function ($split){
+            return[
+                'split_id'=>$split->id,
+                'expense'=>$split->groupExpense->description,
+                'paid_to'=>$split->groupExpnese->payer->name,
+                'amount_owed'=>$split->amount_owed,
+                'amount_paid'=>$split->amount_paid,
+                'remaining'=>$split->amount_owed - $split->amount_paid
+            ];
+
+        })->values(),
+
+        'owed_by_others' => $payerDetails->map(function ($split){
+            return[
+                'split_id'=>$split->id,
+                'expense'=>$split->groupExpense->description,
+                'owed_by'=>$split->user->name,
+                'amount_owed'=>$split->amount_owed,
+                'amount_paid'=>$split->amount_paid,
+                'remaining'=>$split->amount_owed - $split->amount_paid,
+            ];
+        })->values(),
+        ];
+    }
+
+    public function getBalanceHistory(string $groupId, string $tergetUserId, string $requesterId)
+    {
+        if(!$this->groupRepository->isMember($groupId,$requesterId)){
+            throw new \Exception('you are not a member of this group',403);
+        }
+
+        $debtorHistory=$this->settlementRequestRepository->getConfirmedAsDebtor($tergetUserId);
+        $payerHistory=$this->settlementRequestRepository->getConfirmedAsPayer($tergetUserId);
+
+        return [
+            'paid_to_others'=>$debtorHistory->map(function ($request){
+                return[
+                'expense'=>$request->expenseSplit->groupExpense->description,
+                'paid_to'=>$request->expenseSplit->groupExpense->payer->name,
+                'amount'=> $request->amount,
+                'confirmed_at'=>$request->confirmed_at
+                ];
+            })->values(),
+
+            'received_by_others'=>$payerHistory->map(function($request){
+                return[
+                    'expense'=>$request->expenseSplit->groupExpense->description,
+                    'received_from'=>$request->expenseSplit->user->name,
+                    'amount'=>$request->amount,
+
+                ];
+            })->values(),
+        ];
+
+
+    }
 }

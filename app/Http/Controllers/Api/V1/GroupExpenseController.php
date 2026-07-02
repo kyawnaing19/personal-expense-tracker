@@ -208,4 +208,61 @@ class GroupExpenseController extends Controller
         }
 
     }
+
+
+    public function groupBalance(Request $request, string $groupId): JsonResponse
+    {
+    try {
+        $balance = $this->groupExpenseService->getGroupBalance($groupId, $request->user()->id);
+        return response()->json([
+            'success' => true,
+             'data' => $balance
+             ]);
+        }  catch (\Exception $e) {
+
+
+            $statusCode = (int) $e->getCode();
+
+                if ($statusCode < 200 || $statusCode >= 600) {
+                $statusCode = 500;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $statusCode);
+        }
+    }
+
+    public function balanceDetails(Request $request, string $groupId, string $userId): JsonResponse
+    {
+        try {
+        $details = $this->groupExpenseService->getBalanceDetail($groupId, $userId, $request->user()->id);
+        return response()->json([
+            'success' => true,
+            'data' => $details
+             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], (int) $e->getCode() ?: 500);
+        }
+    }
+
+    public function balanceHistory(Request $request, string $groupId, string $userId): JsonResponse
+    {
+    try {
+        $history = $this->groupExpenseService->getBalanceHistory($groupId, $userId, $request->user()->id);
+        return response()->json([
+            'success' => true,
+            'data' => $history
+            ]);
+        } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], (int) $e->getCode() ?: 500);
+        }
+    }
 }

@@ -96,7 +96,10 @@ Route::prefix('v1')->group(function () {
         Route::post('settlement-requests/{requestId}/confirm', [GroupExpenseController::class, 'confirmPayment']);
         Route::post('settlement-requests/{requestId}/reject', [GroupExpenseController::class, 'rejectPayment']);
 
-
+        //groupExpense Summary
+        Route::get('groups/{groupId}/balance', [GroupExpenseController::class, 'groupBalance']);
+        Route::get('groups/{groupId}/balance/{userId}/details', [GroupExpenseController::class, 'balanceDetails']);
+        Route::get('groups/{groupId}/balance/{userId}/history', [GroupExpenseController::class, 'balanceHistory']);
 
     });
 

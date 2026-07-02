@@ -38,4 +38,27 @@ class SettlementRequestRepository
         });
     }
 
+    //User(Debtor)'s confirm-setlled history
+    public function getConfirmedAsDebtor(string $userId)
+    {
+        return SettlementRequest::where('claimed_by',$userId)
+                                ->where('status','confirmed')
+                                ->with(['expenseSplit.groupExpense.payer','expenseSplit.groupExpense.category'])
+                                ->orderBy('confirmed_at','desc')
+                                ->get();
+    }
+
+    //User(payer) comfirm-history from user(debtor)' setlle Request
+    public function getConfirmedAsPayer(string $userId)
+    {
+        return SettlementRequest::whereHas('expenseSplit.groupExpense',
+        function ($query) use ($userId){
+            $query->where('paid_by',$userId);
+        })
+        ->where('status','confirmed')
+        ->with(['expenseSplit.user','expenseSplit.groupExpense'])
+        ->orderBy('confirmed_at','desc')
+        ->get();
+    }
+
 }

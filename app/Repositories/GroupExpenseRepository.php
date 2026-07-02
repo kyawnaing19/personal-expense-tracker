@@ -3,6 +3,8 @@ namespace App\Repositories;
 
 use App\Models\ExpenseSplit;
 use App\Models\GroupExpense;
+use App\Models\SettlementRequest;
+use Hamcrest\Core\Set;
 
  class GroupExpenseRepository
  {
@@ -66,13 +68,54 @@ use App\Models\GroupExpense;
 
     public function getSplitsByExpense(string $expenseId)
     {
-        return ExpenseSplit::where('group_Expense_id', $expenseId)->get();
+        return ExpenseSplit::where('group_expense_id', $expenseId)->get();
     }
 
     public function updateSplit(ExpenseSplit $expense, array $data): ExpenseSplit
     {
         $expense->update($data);
         return $expense;
+    }
+
+    public function getReceivableSummary(String $groupId)
+    {
+        return ExpenseSplit::join('group_expenses','expense_splits.group_expense_id','=','group_expenses.id')
+                            ->where('group_expenses.group_id',$groupId)
+                            ->selectRaw('group_expenses.paid_by as user_id,
+                             SUM(expense_splits.amount_owed - expense_splits.amount_paid) as total_receivable')
+                            ->groupBy('group_expenses.paid_by')
+                            ->get()
+                            ->keyBy('user_id');
+
+    }
+
+    public function getPayableSummary(string $groupId)
+    {
+        return ExpenseSplit::join('group_expenses','expense_splits.group_expense_id','=','group_expenses.id')
+                            ->where('group_expenses.group_id',$groupId)
+                            ->selectRaw('expense_splits.user_id,
+                             SUM(expense_splits.amount_owed - expense_splits.amount_paid) as total_payable')
+                            ->groupBy('expense_splits.user_id')
+                            ->get()
+                            ->keyBy('user_id');
+    }
+    //tu myar ko pyan pay ya mal a kyay detail
+    public function getActiveDebtorDetail(string $userId)
+    {
+        return ExpenseSplit::where('user_id',$userId)
+                            ->where('is_settled',false)
+                            ->with(['groupExpense.payer','groupExpense.category'])
+                            ->get();
+    }
+    //thu pay htar p thu pyan ya mal a kyay detail
+    public function getActivePayerDetails(string $userId)
+    {
+        return ExpenseSplit::whereHas('groupExpense', function($query) use ($userId){
+                $query->where('paid_by',$userId);
+        })
+        ->where('is_settled',false)
+        ->with(['user','groupExpense'])
+        ->get();
     }
 
  }
