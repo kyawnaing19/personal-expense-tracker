@@ -53,7 +53,7 @@ class BudgetAlertService
 
         $user = User::query()->find($userId);
 
-        // 3. Notification logic
+        // 3. Notification logic to mobile
         if ($percentage >= 100) {
             $this->notificationService->sendToUser(
                 $user,
