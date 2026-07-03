@@ -24,3 +24,4 @@ yarn-error.log
 *.json
 !composer.json
 !package.json
+/storage/app/firebase.json

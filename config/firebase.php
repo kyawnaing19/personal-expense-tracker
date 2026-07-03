@@ -50,9 +50,11 @@ return [
              *
              */
 
-            'credentials' => env('FIREBASE_CREDENTIALS_JSON')
-                ? json_decode(env('FIREBASE_CREDENTIALS_JSON'), true)
-                : env('FIREBASE_CREDENTIALS'),
+            'credentials' => [
+            'file' => env('FIREBASE_CREDENTIALS_PATH')
+                ? base_path(env('FIREBASE_CREDENTIALS_PATH'))
+                : null,
+            ],
             /*
              * ------------------------------------------------------------------------
              * Firebase Auth Component
