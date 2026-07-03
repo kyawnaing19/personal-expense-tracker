@@ -14,7 +14,13 @@ class BudgetAlertService
 
     public function checkAfterTransaction(string $userId, string $categoryId, int $month, int $year): void
     {
+        \log::info('budgetAlert check started',[
+            'user_id'=>$userId,
+            'category_id'=>$categoryId,
+            'month'=>$month,
+            'year'=>$year
 
+        ]);
         // to check this category has budget for this month
         $budget = Budget::query()
                         ->where('user_id', $userId)
@@ -22,8 +28,10 @@ class BudgetAlertService
                         ->where('month', $month)
                         ->where('year', $year)
                         ->first();
+        \Log::info('budget found',['budget'=>$budget]);
 
         if (!$budget) {
+            \Log::info('no budget found');
             return;
         }
 
@@ -37,8 +45,10 @@ class BudgetAlertService
                             ->whereMonth('transaction_date', $month)
                             ->whereYear('transaction_date', $year)
                             ->sum('amount');
+        \Log::info('Spent amount',['spent'=>$spent,'amount'=>$spent->amount]);
 
         $percentage = ($spent / $budget->amount) * 100;
+        \Log::info('Budget Percentage',['percentage'=>$percentage]);
         $alertThreshold = $budget->alert_percentage ?? 80;
 
         $user = User::query()->find($userId);
