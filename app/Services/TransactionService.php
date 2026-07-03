@@ -81,8 +81,10 @@ class TransactionService
         $data['user_id']=$userId;
         $data['transaction_date']=now()->format('Y-m-d');
         $transaction=$this->transactionRepository->create($data);
+
         //budget Alert Check
         if ($transaction->type === 'expense' && $transaction->status === 'confirmed') {
+
             $this->budgetAlertService->checkAfterTransaction(
                 $userId, $transaction->category_id,
                  (int) date('n', strtotime($transaction->transaction_date)),

@@ -11,8 +11,10 @@ class Transaction extends Model
     use HasFactory;
     use HasUlids;
     protected $fillable = [
-        'user_id','category_id','amount','type','note','transaction_date','receipt_path','recurring_id',
+        'user_id','category_id','amount','type','note','transaction_date','receipt_path','recurring_id','status'
     ];
+
+    protected $attributes = ['status'=>'confirmed'];
 
     public function user()
     {

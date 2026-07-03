@@ -14,7 +14,7 @@ class BudgetAlertService
 
     public function checkAfterTransaction(string $userId, string $categoryId, int $month, int $year): void
     {
-        \log::info('budgetAlert check started',[
+        \Log::info('budgetAlert check started',[
             'user_id'=>$userId,
             'category_id'=>$categoryId,
             'month'=>$month,
@@ -45,7 +45,9 @@ class BudgetAlertService
                             ->whereMonth('transaction_date', $month)
                             ->whereYear('transaction_date', $year)
                             ->sum('amount');
-        \Log::info('Spent amount',['spent'=>$spent,'amount'=>$spent->amount]);
+
+
+        \Log::info('Spent amount',['spent'=>$spent]);
 
         $percentage = ($spent / $budget->amount) * 100;
         \Log::info('Budget Percentage',['percentage'=>$percentage]);
