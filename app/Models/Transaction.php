@@ -25,6 +25,6 @@ class Transaction extends Model
     }
     public function recurringTransaction()
     {
-        return $this->belongsTo(Recurring_Transaction::class, 'recurring_id');
+        return $this->belongsTo(RecurringTransaction::class, 'recurring_id');
     }
 }

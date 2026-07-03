@@ -11,7 +11,9 @@ class TransactionService
 {
     public function __construct(
         private TransactionRepository $transactionRepository,
-        private CategoryRepository $categoryRepository
+        private CategoryRepository $categoryRepository,
+        private BudgetAlertService $budgetAlertService
+
     )
     {}
 
@@ -78,7 +80,18 @@ class TransactionService
         $data['type']=$category->type;
         $data['user_id']=$userId;
         $data['transaction_date']=now()->format('Y-m-d');
-        return $this->transactionRepository->create($data);
+        $transaction=$this->transactionRepository->create($data);
+        //budget Alert Check
+        if ($transaction->type === 'expense' && $transaction->status === 'confirmed') {
+            $this->budgetAlertService->checkAfterTransaction(
+                $userId, $transaction->category_id,
+                 (int) date('n', strtotime($transaction->transaction_date)),
+                 (int) date('Y', strtotime($transaction->transaction_date))
+                );
+        }
+        return $transaction;
+
+
     }
 
     public function update(string $id, array $data,string $userId)
@@ -112,7 +125,20 @@ class TransactionService
         if($transaction->status!=='pending'){
             throw new \Exception('only pending transactions can be accepted!',422);
         }
-        return $this->transactionRepository->update($transaction,['status'=>'confirmed']);
+
+        $updated=$this->transactionRepository->update($transaction,['status'=>'confirmed']);
+
+        if ($updated->type === 'expense') {
+
+             $date = $updated->transaction_date;
+             $this->budgetAlertService->checkAfterTransaction(
+                 $userId, $updated->category_id,
+                 (int) $date->format('n'),
+                 (int) $date->format('Y')
+                );
+        }
+
+        return $updated;
     }
 
     public function reject(string $id, string $userId)
