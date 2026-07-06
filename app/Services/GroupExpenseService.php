@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Http\Resources\ExpenseSplitResource;
+use App\Http\Resources\GroupExpensesDetailResource;
 use App\Repositories\GroupExpenseRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\SettlementRequestRepository;
@@ -34,7 +36,7 @@ class GroupExpenseService
             throw new \Exception('you are not a member of this group', 403);
         }
 
-        return $expense;
+        return new GroupExpensesDetailResource($expense);
     }
 
     public function create(array $data, string $userId)
@@ -112,6 +114,16 @@ class GroupExpenseService
         }
 
         return $this->expenseRepository->delete($expense);
+    }
+
+    public function getSplitsByUser(string $userId)
+    {
+        $groups=$this->groupRepository->getAllByUser($userId);
+        if($groups->isEmpty()) {
+            throw new \Exception('you are not a member of any group', 403);
+        }
+        $splits = $this->expenseRepository->getSplitsByUser($userId);
+        return ExpenseSplitResource::collection($splits);
     }
 
     // Split logic

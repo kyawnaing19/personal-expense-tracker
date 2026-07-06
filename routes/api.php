@@ -87,6 +87,7 @@ Route::prefix('v1')->group(function () {
 
         //groupExpense && Split
         Route::get('groups/{groupId}/expenses', [GroupExpenseController::class, 'index']);
+        Route::get('groups/expenses/splits', [GroupExpenseController::class, 'showSplitsByUser']);
         Route::post('group-expenses', [GroupExpenseController::class, 'store']);
         Route::get('group-expenses/{id}', [GroupExpenseController::class, 'show']);
         Route::put('group-expenses/{id}', [GroupExpenseController::class, 'update']);

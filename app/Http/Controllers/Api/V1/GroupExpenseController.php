@@ -122,27 +122,22 @@ class GroupExpenseController extends Controller
         }
     }
 
-    // public function settle(SettleSplitRequest $request, string $splitId): JsonResponse
-    // {
-    //     try {
-    //         $split = $this->groupExpenseService->settle(
-    //             $splitId,
-    //             $request->validated('amount'),
-    //             $request->user()->id
-    //         );
+    public function showSplitsByUser(Request $request): JsonResponse
+    {
+        try {
+            $splits = $this->groupExpenseService->getSplitsByUser($request->user()->id);
 
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Payment recorded successfully',
-    //             'data' => $split,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $e->getMessage(),
-    //         ], (int) $e->getCode() ?: 500);
-    //     }
-    // }
+            return response()->json([
+                'success' => true,
+                'data' => $splits,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], (int) $e->getCode() ?: 500);
+        }
+    }
 
     public function ClaimPayment(ClaimPaymentRequest $request, string $splitId): JsonResponse
     {

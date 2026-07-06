@@ -49,6 +49,16 @@ use Hamcrest\Core\Set;
         ]);
     }
 
+
+    //getSplitByUser
+    public function getSplitsByUser(string $userId)
+    {
+        return ExpenseSplit::where('user_id',$userId)
+                            ->where('is_settled',false)
+                            ->with(['groupExpense.payer','groupExpense.group'])
+                            ->get();
+    }
+
     public function deleteSplits(string $expenseId): void
     {
         ExpenseSplit::where('group_expense_id',$expenseId)->delete();
