@@ -61,4 +61,34 @@ class SettlementRequestRepository
         ->get();
     }
 
+    //(paid_by)  requests
+    public function getIncomingRequests(string $userId, string $status = null)
+    {
+        return SettlementRequest::whereHas('expenseSplit.groupExpense', function ($query) use ($userId) {
+            $query->where('paid_by', $userId);
+        })
+        ->when($status, fn($q) => $q->where('status', $status))
+        ->with([
+            'claimant',
+            'expenseSplit.groupExpense.group',
+            'expenseSplit.groupExpense.category',
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+    }
+
+    //  (claimant) requests
+    public function getOutgoingRequests(string $userId, string $status = null)
+    {
+        return SettlementRequest::where('claimed_by', $userId)
+        ->when($status, fn($q) => $q->where('status', $status))
+        ->with([
+            'expenseSplit.groupExpense.payer',
+            'expenseSplit.groupExpense.group',
+            'expenseSplit.groupExpense.category',
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
+    }
+
 }

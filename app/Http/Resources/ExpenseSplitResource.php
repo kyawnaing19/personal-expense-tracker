@@ -25,6 +25,13 @@ class ExpenseSplitResource extends JsonResource
             'settled_at' => $this->settled_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            // Flattening and shaping the user data
+            'user' => [
+                'id' => $this->user->id ?? null,
+                'name' => $this->user->name ?? null,
+                'avatar' => $this->user->avatar ?? null,
+                'email' => $this->user->email ?? null,
+            ],
 
             // Flattening and shaping the group_expense data
             'group_expense' => [
@@ -34,7 +41,6 @@ class ExpenseSplitResource extends JsonResource
                 'payer' => [
                     'id' => $this->groupExpense->payer->id ?? null,
                     'name' => $this->groupExpense->payer->name ?? null,
-                    'google_id' => $this->groupExpense->payer->google_id ?? null,
                     'avatar' => $this->groupExpense->payer->avatar ?? null,
                     'email' => $this->groupExpense->payer->email ?? null,
                 ],

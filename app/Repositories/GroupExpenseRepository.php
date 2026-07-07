@@ -55,7 +55,7 @@ use Hamcrest\Core\Set;
     {
         return ExpenseSplit::where('user_id',$userId)
                             ->where('is_settled',false)
-                            ->with(['groupExpense.payer','groupExpense.group'])
+                            ->with(['user','groupExpense.payer','groupExpense.group'])
                             ->get();
     }
 
