@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\ExpenseSplitResource;
+use App\Http\Resources\GroupExpenseResource;
 use App\Http\Resources\GroupExpensesDetailResource;
 use App\Repositories\GroupExpenseRepository;
 use App\Repositories\GroupRepository;
@@ -23,7 +24,8 @@ class GroupExpenseService
             throw new \Exception('you are not a member of this group', 403);
         }
 
-        return $this->expenseRepository->getAllByGroup($groupId);
+         $expenses=$this->expenseRepository->getAllByGroup($groupId);
+         return GroupExpenseResource::collection($expenses);
     }
 
     public function findById(string $id, string $userId)

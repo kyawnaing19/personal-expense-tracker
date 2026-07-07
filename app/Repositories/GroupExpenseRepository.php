@@ -11,7 +11,7 @@ use Hamcrest\Core\Set;
     public function getAllByGroup(string $groupId)
     {
         return GroupExpense::where('group_id',$groupId)
-                            ->with(['payer','category','splits.user'])
+                            ->with(['group','payer','category','splits.user'])
                             ->orderBy('expense_date','desc')
                             ->get();
     }

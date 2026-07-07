@@ -70,6 +70,7 @@ Route::prefix('v1')->group(function () {
         //report
         Route::get('reports/summaries',[ReportController::class,'getSummary']);
         Route::get('reports/category-breakdown',[ReportController::class,'getCategoryBreakdown']);
+        Route::get('reports/annual-summary',[ReportController::class,'getAnnualSummary']);
         Route::get('reports/budgets-overview',[ReportController::class,'getBudgetOverview']);
 
 
@@ -87,7 +88,7 @@ Route::prefix('v1')->group(function () {
 
         //groupExpense && Split
         Route::get('groups/{groupId}/expenses', [GroupExpenseController::class, 'index']);
-        Route::get('groups/expenses/splits', [GroupExpenseController::class, 'showSplitsByUser']);
+        Route::get('groups/expenses/splits', [GroupExpenseController::class, 'showSplitsByUser']);//to settle
         Route::post('group-expenses', [GroupExpenseController::class, 'store']);
         Route::get('group-expenses/{id}', [GroupExpenseController::class, 'show']);
         Route::put('group-expenses/{id}', [GroupExpenseController::class, 'update']);

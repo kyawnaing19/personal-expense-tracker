@@ -1,6 +1,8 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\AnnualSummaryResource;
+use App\Http\Resources\CategoryBreakdownResource;
 use App\Repositories\ReportRepository;
 use Carbon\Carbon;
 
@@ -58,7 +60,15 @@ class ReportService
     public function getCategoryBreakdown(string $userId, array $filter=[])
     {
         $dataRange=$this->getDataRange($filter);
-        return $this->reportRepository->getCategoryBreakdown($userId,$dataRange);
+         $rawBreakdown=$this->reportRepository->getCategoryBreakdown($userId,$dataRange);
+         return new CategoryBreakdownResource($rawBreakdown);
+    }
+
+    public function getAnnualSummary(string $userId,array $filter=[])
+    {
+        $dataRange=$this->getDataRange($filter);
+        $annualSummary=$this->reportRepository->getAnnualSummary($userId,$dataRange);
+        return AnnualSummaryResource::collection($annualSummary);
     }
 
     public function getBudgetOverview(string $userId,array $filter=[])

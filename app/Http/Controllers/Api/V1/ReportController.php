@@ -57,6 +57,26 @@ class ReportController extends Controller
         }
     }
 
+    public function getAnnualSummary(Request $request):JsonResponse
+    {
+        $result=$request->only(['filter','from','to']);
+        try
+        {
+            $annual_summary=$this->reportService->getAnnualSummary($request->user()->id,$result);
+            return response()->json([
+                'success'=>true,
+                'data'=>$annual_summary
+            ]);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json([
+                'success'=>false,
+                'message'=>$e->getMessage()
+            ]);
+        }
+    }
+
     public function getBudgetOverview(Request $request):JsonResponse
     {
         $userId=$request->user()->id;

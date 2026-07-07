@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Models\Budget;
 use App\Models\Transaction;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 class ReportRepository
 {
@@ -26,9 +27,9 @@ class ReportRepository
         ];
     }
 
-    public function getCategoryBreakdown(string $userId,array $datarange):array
+    public function getCategoryBreakdown(string $userId,array $datarange):EloquentCollection
     {
-        $result=Transaction::where('transactions.user_id',$userId)
+        return Transaction::where('transactions.user_id',$userId)
                             ->whereBetween('transaction_date',[
                                 $datarange['from'],
                                 $datarange['to']
@@ -50,36 +51,24 @@ class ReportRepository
                                 )
                             ->get();
 
-        $income=$result->where('type','income');
-        $expense=$result->where('type','expense');
+    }
 
-        $totalIncome=$income->sum('total');
-        $totalExpense=$expense->sum('total');
-
-        return [
-            'income'=>$income->map(function($item) use ($totalIncome){
-            return [
-                'category' => $item->name,
-                'color' => $item->color,
-                'amount' => $item->total,
-                'percentage' => $totalIncome > 0
-                    ?round(($item->total/$totalIncome)*100, 1)
-                    :0,
-            ];
-
-            })->values(),
-
-            'expense'=>$expense->map(function($item) use ($totalExpense){
-                return [
-                    'category'=> $item->name,
-                    'color'=>$item->color,
-                    'amount'=>$item->total,
-                    'percentage'=>$totalExpense > 0
-                    ?round(($item->total/$totalExpense)*100, 1)
-                    :0,
-                ];
-            })->values(),
-        ];
+    //to get total income and expense per month
+    public function getAnnualSummary(string $userId, array $datarange):EloquentCollection
+    {
+        return Transaction::where('user_id', $userId)
+            ->whereBetween('transaction_date', [$datarange['from'], $datarange['to']])
+            ->where('status', 'confirmed')
+            ->selectRaw('
+                YEAR(transaction_date) as year,
+                MONTH(transaction_date) as month,
+                SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as total_income,
+                SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as total_expense
+                ')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
     }
 
     public function getBudgetOverview(string $userId, int $month, int $year):array
