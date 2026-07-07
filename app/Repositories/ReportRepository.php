@@ -98,12 +98,14 @@ class ReportRepository
             $remaining=$budget->amount-$spent;
 
             return [
+                'id'=>$budget->id,
                 'category'=>$budget->category?->name,
                 'budget'=>$budget->amount,
                 'spent'=>$spent,
                 'remaining'=>$remaining,
-                'percentage'=>$budget->amount > 0
+                'expense_percentage'=>$budget->amount > 0
                     ?round(($spent/$budget->amount)*100,1):0,
+                'alert_percentage'=>$budget->alert_percentage,
 
             ];
         })->toArray();

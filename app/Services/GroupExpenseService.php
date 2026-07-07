@@ -373,7 +373,8 @@ class GroupExpenseService
             return[
                 'user_id'=>$member->id,
                 'name'=>$member->name,
-                'toal_receivable'=>$receivables->get($member->id)->total_receivable ?? 0,
+                'avatar'=>$member->avatar,
+                'total_receivable'=>$receivables->get($member->id)->total_receivable ?? 0,
                 'total_payable'=>$payables->get($member->id)->total_payable ?? 0,
 
             ];
