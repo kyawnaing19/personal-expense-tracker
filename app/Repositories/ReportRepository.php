@@ -99,7 +99,9 @@ class ReportRepository
 
             return [
                 'id'=>$budget->id,
-                'category'=>$budget->category?->name,
+                'category_name'=>$budget->category?->name,
+                'category_color'=>$budget->category?->color,
+                'category_icon'=>$budget->category?->icon,
                 'budget'=>$budget->amount,
                 'spent'=>$spent,
                 'remaining'=>$remaining,
