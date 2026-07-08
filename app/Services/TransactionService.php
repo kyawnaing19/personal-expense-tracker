@@ -118,7 +118,7 @@ class TransactionService
         return $this->transactionRepository->delete($transaction);
     }
 
-       public function accept(string $id, string $userId)
+    public function accept(string $id, string $userId)
     {
         $transaction=$this->transactionRepository->findById($id,$userId);
         if (!$transaction) {
@@ -132,7 +132,7 @@ class TransactionService
 
         if ($updated->type === 'expense') {
 
-             $date = $updated->transaction_date;
+             $date = Carbon::parse($updated->transaction_date);
              $this->budgetAlertService->checkAfterTransaction(
                  $userId, $updated->category_id,
                  (int) $date->format('n'),

@@ -146,8 +146,8 @@ class RecurringTransactionService
             //at 8 am
             if ($recurring->user) {
 
-                // $sendAt = Carbon::today('Asia/Yangon')->setHour(8)->setMinute(0);
-                $sendAt=now()->addSeconds(30);
+                $sendAt = Carbon::today('Asia/Yangon')->setHour(8)->setMinute(0);
+                //$sendAt=now()->addSeconds(30);
 
                 if (now('Asia/Yangon')->greaterThan($sendAt)) {
                     $sendAt = Carbon::tomorrow('Asia/Yangon')->setHour(8)->setMinute(0);

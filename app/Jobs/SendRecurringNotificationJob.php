@@ -15,7 +15,7 @@ class SendRecurringNotificationJob implements ShouldQueue
 
     public function __construct(
         public User $user,
-        public int $transactionId,
+        public string $transactionId,
         public string $title,
         public string $body,
         public array $data = []
