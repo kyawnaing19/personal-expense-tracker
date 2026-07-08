@@ -178,6 +178,25 @@ class GroupExpenseService
         ], $filterSplits);
     }
 
+    // private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
+    // {
+    // // ၁။ Custom split ဖြစ်တဲ့အတွက် ပါဝင်သူ အားလုံး (Payer အပါအဝင်) ရဲ့ sum ကို အရင်တွက်ပါ
+    // $totalSum = array_sum(array_column($splits, 'amount_owed'));
+
+    // // ၂။ စုစုပေါင်း ပမာဏနဲ့ တန်းတူ ဖြစ်ရဲ့လား စစ်ပါ
+    // if ($totalSum !== $totalAmount) {
+    //     throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
+    // }
+
+    // // ၃။ Validation အောင်ရင် Payer မှလွဲ၍ ကျန်တဲ့သူတွေရဲ့ share ကိုပဲ filter လုပ်ပြီး ပြန်ထုတ်ပါ
+    // $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
+
+    // return array_map(fn ($split) => [
+    //     'user_id' => $split['user_id'],
+    //     'amount_owed' => $split['amount_owed'],
+    // ], array_values($otherSplits));
+    // }
+
     private function validateSplitData(array $data): void
     {
         if (($data['split_type'] ?? null) === 'custom') {
@@ -190,13 +209,6 @@ class GroupExpenseService
                 throw new \Exception('Each split must have user_id and amount_owed',422);
             }
         }
-            // $sum = array_sum(array_column($data['splits'], 'amount'));
-            // if ($sum !== (int) $data['amount']) {
-            //     throw new \Exception(
-            //         "Split amounts ({$sum}) must equal total amount ({$data['amount']})",
-            //         422
-            //     );
-            // }
         }
     }
 
@@ -235,30 +247,6 @@ class GroupExpenseService
     }
 
     // ----Settlement Logic------
-    // public function settle(string $splitId, int $amount, string $requesterId)
-    // {
-    //     $split = $this->expenseRepository->findSplitById($splitId);
-    //     if (! $split) {
-    //         throw new \Exception('Split record not found', 404);
-    //     }
-    //     if ($split->user_id !== $requesterId) {
-    //         throw new \Exception('you can only settle your own debt', 403);
-    //     }
-
-    //     $remainingOwed = $split->amount_owed - $split->amount_paid;
-    //     if ($amount > $remainingOwed) {
-    //         throw new \Exception("payment amount exceeds remaining owed amount {$remainingOwed}", 422);
-    //     }
-
-    //     $newAmountPaid = $split->amount_paid + $amount;
-    //     $isSettled = $newAmountPaid >= $split->amount_owed;
-
-    //     return $this->expenseRepository->updateSplit($split, [
-    //         'amount_paid' => $newAmountPaid,
-    //         'is_settled' => $isSettled,
-    //         'settled_at' => $isSettled ? now() : null,
-    //     ]);
-    // }
     public function claimPayment(string $splitId, int $amount, string $claimantId)
     {
         $split=$this->expenseRepository->findSplitById($splitId);

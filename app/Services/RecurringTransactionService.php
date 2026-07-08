@@ -40,14 +40,29 @@ class RecurringTransactionService
         return $this->recurringTransactionRepository->create($data);
     }
 
-    public function update(string $id, array $data, string $userId)
-    {
-        $recurringTransaction = $this->findById($id, $userId);
-        if (!$recurringTransaction) {
-            throw new \Exception('Recurring transaction not found!',404);
-        }
-        return $this->recurringTransactionRepository->update($recurringTransaction, $data);
+ public function update(string $id, array $data, string $userId)
+{
+    $recurringTransaction = $this->findById($id, $userId);
+    if (!$recurringTransaction) {
+        throw new \Exception('Recurring transaction not found!', 404);
     }
+
+    // 1. If category is being updated, validate & update the type
+    if (isset($data['category_id'])) {
+        $category = $this->categoryRepository->findById($data['category_id'], $userId);
+        if (!$category) {
+            throw new \Exception('Category not found!', 404);
+        }
+        $data['type'] = $category->type;
+    }
+
+    // 2. If start date is updated, reset next_run_date accordingly
+    if (isset($data['start_date'])) {
+        $data['next_run_date'] = $data['start_date'];
+    }
+
+    return $this->recurringTransactionRepository->update($recurringTransaction, $data);
+}
 
     public function delete(string $id, string $userId)
     {
