@@ -10,7 +10,8 @@ class GroupService
 {
     public function __construct(
         private GroupRepository $groupRepository,
-        private UserRepositories $userRepository
+        private UserRepositories $userRepository,
+        private NotificationService $notificationService
     )
     {}
 
@@ -89,7 +90,38 @@ class GroupService
             throw new \InvalidArgumentException('User is already a member of this group', 400);
         }
 
-        return $this->groupRepository->addMember($groupId, $user->id,'member');
+         $this->groupRepository->addMember($groupId, $user->id,'member');
+
+        $group = $this->groupRepository->findById($groupId);
+
+    // E (Joiner) ကို notify
+        $this->notificationService->sendToUser(
+            $user,
+            "You've been added to a group",
+            "You have been added to '{$group->name}'",
+            [
+                'type'     => 'member_invited',
+                'group_id' => $groupId,
+            ]
+        );
+
+    // E မပါတဲ့ existing members တွေကို notify
+    $existingMembers = $group->members->reject(fn($m) => $m->id === $user->id);
+
+        foreach ($existingMembers as $member) {
+            $this->notificationService->sendToUser(
+                $member,
+                'New member joined',
+                "{$user->name} has been added to '{$group->name}'",
+                [
+                    'type'     => 'member_joined',
+                    'group_id' => $groupId,
+                ]
+            );
+        }
+
+        return $this->groupRepository->findMembership($groupId, $user->id);
+
     }
 
     public function removeMember(string $groupId, string $targetUserId, string $requesterdId)
@@ -143,6 +175,39 @@ class GroupService
             throw new \InvalidArgumentException('You are already a member of this group', 400);
         }
 
-        return $this->groupRepository->addMember($group->id, $userId,'member');
+        $this->groupRepository->addMember($group->id, $userId,'member');
+
+
+        $newMember = \App\Models\User::find($userId);
+
+        // E (Joiner) ကို Welcome notify
+        $this->notificationService->sendToUser(
+            $newMember,
+            'Welcome to the group! 🎉',
+            "You have successfully joined '{$group->name}'",
+            [
+                'type'     => 'member_joined_via_code',
+                'group_id' => $group->id,
+            ]
+        );
+
+        // E မပါတဲ့ existing members တွေကို notify
+        $existingMembers = $group->members->reject(fn($m) => $m->id === $userId);
+
+        foreach ($existingMembers as $member) {
+            $this->notificationService->sendToUser(
+                $member,
+                'New member joined',
+                "{$newMember->name} has joined '{$group->name}'",
+                [
+                    'type'     => 'member_joined',
+                    'group_id' => $group->id,
+                ]
+            );
+        }
+
+        return $group;
+
+
     }
 }
