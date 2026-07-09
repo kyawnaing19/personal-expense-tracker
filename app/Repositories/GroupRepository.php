@@ -6,12 +6,15 @@ use App\Models\GroupUser;
 
 class GroupRepository
 {
-    public function getAllByUser(string $userId)
-    {
-        return Group::whereHas('groupUsers', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->get();
-    }
+public function getAllByUser(string $userId)
+{
+    return Group::whereHas('groupUsers', function ($query) use ($userId) {
+        $query->where('user_id', $userId);
+    })
+    ->withCount('groupUsers') // This adds a 'group_users_count' attribute to each group
+    ->get();
+}
+
 
     public function findById(string $id)
     {
