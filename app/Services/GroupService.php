@@ -1,5 +1,7 @@
 <?php
 namespace App\Services;
+
+use App\Http\Resources\GroupResource;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserRepositories;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +26,8 @@ class GroupService
             throw new \InvalidArgumentException('You are not a member of this group', 403);
         }
 
-        return $this->groupRepository->findById($id);
+        $group = $this->groupRepository->findById($id);
+            return new GroupResource($group);
     }
 
     public function create(array $data, string $userId)
