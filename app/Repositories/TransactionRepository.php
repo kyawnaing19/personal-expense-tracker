@@ -10,7 +10,8 @@ class TransactionRepository
 
     public function getAllByUser(string $userId, array $filters = [])
     {
-        $query = Transaction::where('user_id', $userId);
+        $query = Transaction::where('user_id', $userId)
+                            ->where('status', 'confirmed');
         $query->whereBetween('transaction_date', [$filters['from'], $filters['to']]);
         if (!empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
