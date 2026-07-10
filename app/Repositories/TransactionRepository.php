@@ -21,6 +21,14 @@ class TransactionRepository
 
         return $query->orderBy('transaction_date', 'desc')->get();
     }
+
+    public function getRecurringTransactionsByUser(string $userID)
+    {
+        return Transaction::where('user_id', $userID)
+                        ->where('status', 'pending')
+                        ->with('category')
+                        ->get();
+    }
     public function findById(string $id,string $userId)
     {
         return Transaction::where('id',$id)

@@ -169,6 +169,29 @@ class TransactionController extends Controller
         }
 
     }
+
+    public function getRecurringTransactions(Request $request): JsonResponse
+    {
+        try {
+
+            $result = $this->transactionService->getRecurringTransactions(
+                $request->user()->id,
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => 'false',
+                'message' => $e->getMessage(),
+            ], (int) $e->getCode() ?: 500);
+        }
+    }
+
+
     public function accept(string $id, Request $request): JsonResponse
     {
         try {

@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\RecurringTransactionResource;
 use App\Models\Category;
 use App\Models\Transaction;
 use App\Repositories\CategoryRepository;
@@ -116,6 +117,12 @@ class TransactionService
             throw new \Exception('transaction not found!',404);
         }
         return $this->transactionRepository->delete($transaction);
+    }
+
+    public function getRecurringTransactions(string $userId)
+    {
+        $transaction= $this->transactionRepository->getRecurringTransactionsByUser($userId);
+        return RecurringTransactionResource::collection($transaction);
     }
 
     public function accept(string $id, string $userId)

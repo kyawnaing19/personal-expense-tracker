@@ -44,6 +44,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('transactions/{id}', 'destroy');
             Route::post('transactions/{id}/receipt','uploadReceipt');
             Route::delete('transactions/{id}/receipt','deleteReceipt');
+            Route::get('transactions-recurring','getRecurringTransactions');
             //Accept to recurring transaction
             Route::post('transactions/{id}/accept','accept');
             Route::post('transactions/{id}/reject','reject');
