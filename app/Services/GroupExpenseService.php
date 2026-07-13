@@ -164,38 +164,38 @@ class GroupExpenseService
         ])->values()->toArray();
     }
 
+    // private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
+    // {   $filterSplits= array_filter($splits, fn($split) => $split['user_id']!== $paidBy);
+
+    //     $sum = array_sum(array_column($filterSplits, 'amount_owed'));
+    //     if ($sum !== $totalAmount) {
+    //         throw new \Exception("{$sum} must equal total amount {$totalAmount}", 422);
+    //     }
+
+    //     return array_map(fn ($split) => [
+    //         'user_id' => $split['user_id'],
+    //         'amount_owed' => $split['amount_owed'],
+    //     ], $filterSplits);
+    // }
+
     private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
-    {   $filterSplits= array_filter($splits, fn($split) => $split['user_id']!== $paidBy);
+    {
 
-        $sum = array_sum(array_column($filterSplits, 'amount_owed'));
-        if ($sum !== $totalAmount) {
-            throw new \Exception("{$sum} must equal total amount {$totalAmount}", 422);
-        }
+    $totalSum = array_sum(array_column($splits, 'amount_owed'));
 
-        return array_map(fn ($split) => [
-            'user_id' => $split['user_id'],
-            'amount_owed' => $split['amount_owed'],
-        ], $filterSplits);
+
+    if ($totalSum !== $totalAmount) {
+        throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
     }
 
-    // private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
-    // {
-    // // ၁။ Custom split ဖြစ်တဲ့အတွက် ပါဝင်သူ အားလုံး (Payer အပါအဝင်) ရဲ့ sum ကို အရင်တွက်ပါ
-    // $totalSum = array_sum(array_column($splits, 'amount_owed'));
 
-    // // ၂။ စုစုပေါင်း ပမာဏနဲ့ တန်းတူ ဖြစ်ရဲ့လား စစ်ပါ
-    // if ($totalSum !== $totalAmount) {
-    //     throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
-    // }
+    $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
 
-    // // ၃။ Validation အောင်ရင် Payer မှလွဲ၍ ကျန်တဲ့သူတွေရဲ့ share ကိုပဲ filter လုပ်ပြီး ပြန်ထုတ်ပါ
-    // $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
-
-    // return array_map(fn ($split) => [
-    //     'user_id' => $split['user_id'],
-    //     'amount_owed' => $split['amount_owed'],
-    // ], array_values($otherSplits));
-    // }
+    return array_map(fn ($split) => [
+        'user_id' => $split['user_id'],
+        'amount_owed' => $split['amount_owed'],
+    ], array_values($otherSplits));
+    }
 
     private function validateSplitData(array $data): void
     {
