@@ -381,8 +381,8 @@ class GroupExpenseService
             'owed_to_others' => $debtorsDetails->map(function ($split){
             return[
                 'split_id'=>$split->id,
-                'expense'=>$split->groupExpense->description,
-                'paid_to'=>$split->groupExpnese->payer->name,
+                'expense'=> $split->groupExpense?->description ?? 'N/A',
+                'paid_to'=>$split->groupExpense->payer->name,
                 'amount_owed'=>$split->amount_owed,
                 'amount_paid'=>$split->amount_paid,
                 'remaining'=>$split->amount_owed - $split->amount_paid
@@ -393,7 +393,7 @@ class GroupExpenseService
         'owed_by_others' => $payerDetails->map(function ($split){
             return[
                 'split_id'=>$split->id,
-                'expense'=>$split->groupExpense->description,
+                'expense'=> $split->groupExpense?->description ?? 'N/A',
                 'owed_by'=>$split->user->name,
                 'amount_owed'=>$split->amount_owed,
                 'amount_paid'=>$split->amount_paid,
@@ -415,7 +415,7 @@ class GroupExpenseService
         return [
             'paid_to_others'=>$debtorHistory->map(function ($request){
                 return[
-                'expense'=>$request->expenseSplit->groupExpense->description,
+                'expense'=> $request->expenseSplit->groupExpense?->description ?? 'N/A',
                 'time'=>$request->confirmed_at,
                 'paid_to'=>$request->expenseSplit->groupExpense->payer->name,
                 'amount'=> $request->amount,
