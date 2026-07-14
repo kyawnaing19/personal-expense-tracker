@@ -37,6 +37,7 @@ class ExpenseSplitResource extends JsonResource
             'group_expense' => [
                 'id' => $this->groupExpense->id ?? null,
                 'group_id' => $this->groupExpense->group_id ?? null,
+                'description' => $this->groupExpense->description ?? null,
                 'group_name' => $this->groupExpense->group->name ?? null, // Fetches the group name
                 'payer' => [
                     'id' => $this->groupExpense->payer->id ?? null,
