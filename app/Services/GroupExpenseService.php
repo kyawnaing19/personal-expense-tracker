@@ -358,11 +358,14 @@ class GroupExpenseService
                 'settled_at'=>$isSettled ? now() :null,
             ]);
 
-            return $this->settlementRequestRepository->update($settlementRequest,[
+            $settlementRequest = $this->settlementRequestRepository->update($settlementRequest,[
                 'status'=> 'confirmed',
                 'confirmed_by'=>$confirmerId,
                 'confirmed_at'=>now(),
             ]);
+
+            $this->notifySettlementConfirmation($split, $settlementRequest->amount);
+            return $settlementRequest;
         });
 
     }
@@ -384,11 +387,14 @@ class GroupExpenseService
             throw new \Exception('only the person who paid can reject this payment',403);
         }
 
-        return $this->settlementRequestRepository->update($settlementRequest,[
+        $settlementRequest = $this->settlementRequestRepository->update($settlementRequest,[
             'status'=>'rejected',
             'confirmed_by'=>$confirmerId,
             'confirmed_at'=>now(),
         ]);
+
+        $this->notifySettlementRejection($split, $settlementRequest->amount);
+        return $settlementRequest;
     }
 
 
@@ -529,6 +535,50 @@ class GroupExpenseService
         ];
 
         $this->notificationService->sendToUser($payerUser, $title, $body, $payload);
+    }
+
+    private function notifySettlementConfirmation($split, int $amount): void
+    {
+        $claimantUser = $split->user;
+
+        if (!$claimantUser) {
+            return;
+        }
+
+        $payerName = $split->groupExpense?->payer->name ?? 'A user';
+
+        $title = "Payment Confirmed";
+        $body  = "{$payerName} confirmed your payment of {$amount} for the shared expense.";
+
+        $payload = [
+            'type'             => 'payment_confirmed',
+            'expense_split_id' => (string) $split->id,
+            'amount'           => (string) $amount,
+        ];
+
+        $this->notificationService->sendToUser($claimantUser, $title, $body, $payload);
+    }
+
+    private function notifySettlementRejection($split, int $amount): void
+    {
+        $claimantUser = $split->user;
+
+        if (!$claimantUser) {
+            return;
+        }
+
+        $payerName = $split->groupExpense?->payer->name ?? 'A user';
+
+        $title = "Payment Rejected";
+        $body  = "{$payerName} rejected your payment of {$amount} for the shared expense.";
+
+        $payload = [
+            'type'             => 'payment_rejected',
+            'expense_split_id' => (string) $split->id,
+            'amount'           => (string) $amount,
+        ];
+
+        $this->notificationService->sendToUser($claimantUser, $title, $body, $payload);
     }
 
 
