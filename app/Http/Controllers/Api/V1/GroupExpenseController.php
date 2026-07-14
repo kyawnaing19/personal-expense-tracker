@@ -57,6 +57,7 @@ class GroupExpenseController extends Controller
     public function store(StoreGroupExpenseRequest $request): JsonResponse
     {
         try {
+
             $expense = $this->groupExpenseService->create(
                 $request->validated(),
                 $request->user()->id

@@ -58,11 +58,17 @@ class GroupExpenseService
                 'description' => $data['description'] ?? null,
                 'expense_date' => $data['expense_date'],
                 'split_type' => $data['split_type'],
-                'include_payer' => $data['include_payer'] ?? true,
+
             ]);
 
-            $splits = $this->calculateSplits($expense, $data);
-            $this->expenseRepository->createSplits($expense->id, $splits);
+            $splitsData = $this->calculateSplits($expense, $data);
+
+            $expense->update([
+            'include_payer' => $splitsData['include_payer']
+            ]);
+            //dd($splits);
+            $this->expenseRepository->createSplits($expense->id, $splitsData['splits']);
+
 
             return $this->expenseRepository->findById($expense->id);
         });
@@ -154,14 +160,20 @@ class GroupExpenseService
                         : $members->reject(fn ($m) => $m->id == $paidBy);
 
         $count = $denominatorMembers->count();
+
         $perPerson = (int) round($amount / $count);
 
         $splitMembers = $members->reject(fn ($m) => $m->id === $paidBy);
 
-        return $splitMembers->map(fn ($member) => [
+        $formattedSplits = $splitMembers->map(fn ($member) => [
             'user_id' => $member->id,
             'amount_owed' => $perPerson,
         ])->values()->toArray();
+
+        return [
+        'splits' => $formattedSplits,
+        'include_payer' => $includePayer,
+        ];
     }
 
     // private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
@@ -199,6 +211,7 @@ class GroupExpenseService
 
     private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
     {
+
         $totalSum = array_sum(array_column($splits, 'amount_owed'));
 
         if ($totalSum !== $totalAmount) {
@@ -206,6 +219,7 @@ class GroupExpenseService
         }
 
         $payerSplit = array_filter($splits, fn($split) => $split['user_id'] === $paidBy);
+
         $payerSplit = current($payerSplit);
 
         $includePayer = $payerSplit && $payerSplit['amount_owed'] > 0;
