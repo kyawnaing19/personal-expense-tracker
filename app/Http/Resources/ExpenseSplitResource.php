@@ -46,6 +46,10 @@ class ExpenseSplitResource extends JsonResource
                     'email' => $this->groupExpense->payer->email ?? null,
                 ],
             ],
+            'settlement_requests'=>
+            [
+                'status'=>$this->settlementRequests->first()?->status ?? null,
+            ]
         ];
     }
 }

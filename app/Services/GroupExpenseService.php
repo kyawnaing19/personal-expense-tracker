@@ -457,7 +457,6 @@ class GroupExpenseService
             'paid_to_others'=>$debtorHistory->map(function ($request){
                 return[
                 'expense'=> $request->expenseSplit->groupExpense?->description ?? 'N/A',
-                'time'=>$request->confirmed_at,
                 'paid_to'=>$request->expenseSplit->groupExpense->payer->name,
                 'amount'=> $request->amount,
                 'confirmed_at'=>$request->confirmed_at
@@ -466,7 +465,7 @@ class GroupExpenseService
 
             'received_by_others'=>$payerHistory->map(function($request){
                 return[
-                    'expense'=>$request->expenseSplit->groupExpense->description,
+                    'expense'=>$request->expenseSplit->groupExpense?->description ?? 'N/A',
                     'received_from'=>$request->expenseSplit->user->name,
                     'amount'=>$request->amount,
                     'confirmed_at'=>$request->confirmed_at
