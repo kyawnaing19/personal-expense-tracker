@@ -315,12 +315,14 @@ class GroupExpenseService
                 ,422);
             }
 
-            return $this->settlementRequestRepository->create([
+            $settlementRequest = $this->settlementRequestRepository->create([
                 'expense_split_id'=>$splitId,
                 'claimed_by'      =>$claimantId,
                 'amount'          =>$amount,
                 'status'          =>'pending'
             ]);
+            $this->notifySettlementRequest($split,$amount);
+            return $settlementRequest;
 
     }
 
@@ -505,4 +507,29 @@ class GroupExpenseService
             );
         }
     }
+
+    //for settlement request notification
+    public function notifySettlementRequest($split,int $amount): void
+    {
+       $payerUser = $split->groupExpense?->payer;
+
+        if (!$payerUser) {
+            return;
+        }
+
+        $claimantName = $split->user?->name ?? 'A user';
+
+        $title = "New Payment Claim";
+        $body  = "{$claimantName} claimed a payment of {$amount} for your shared expense.";
+
+        $payload = [
+            'type'             => 'payment_claim',
+            'expense_split_id' => (string) $split->id,
+            'amount'           => (string) $amount,
+        ];
+
+        $this->notificationService->sendToUser($payerUser, $title, $body, $payload);
+    }
+
+
 }
