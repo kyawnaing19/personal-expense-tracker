@@ -178,24 +178,51 @@ class GroupExpenseService
     //     ], $filterSplits);
     // }
 
+    // private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
+    // {
+
+    // $totalSum = array_sum(array_column($splits, 'amount_owed'));
+
+
+    // if ($totalSum !== $totalAmount) {
+    //     throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
+    // }
+
+
+    // $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
+
+    // return array_map(fn ($split) => [
+    //     'user_id' => $split['user_id'],
+    //     'amount_owed' => $split['amount_owed'],
+    // ], array_values($otherSplits));
+    // }
+
     private function buildCustomSplits(int $totalAmount, array $splits, string $paidBy): array
     {
+        $totalSum = array_sum(array_column($splits, 'amount_owed'));
 
-    $totalSum = array_sum(array_column($splits, 'amount_owed'));
+        if ($totalSum !== $totalAmount) {
+            throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
+        }
 
+        $payerSplit = array_filter($splits, fn($split) => $split['user_id'] === $paidBy);
+        $payerSplit = current($payerSplit);
 
-    if ($totalSum !== $totalAmount) {
-        throw new \Exception("Total splits sum ({$totalSum}) must equal total amount ({$totalAmount})", 422);
+        $includePayer = $payerSplit && $payerSplit['amount_owed'] > 0;
+
+        $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
+
+        $formattedSplits = array_map(fn ($split) => [
+            'user_id' => $split['user_id'],
+            'amount_owed' => $split['amount_owed'],
+        ], array_values($otherSplits));
+
+        return [
+            'splits' => $formattedSplits,
+            'include_payer' => $includePayer,
+        ];
     }
 
-
-    $otherSplits = array_filter($splits, fn($split) => $split['user_id'] !== $paidBy);
-
-    return array_map(fn ($split) => [
-        'user_id' => $split['user_id'],
-        'amount_owed' => $split['amount_owed'],
-    ], array_values($otherSplits));
-    }
 
     private function validateSplitData(array $data): void
     {
