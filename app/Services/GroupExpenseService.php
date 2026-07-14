@@ -15,7 +15,8 @@ class GroupExpenseService
     public function __construct(
         private GroupExpenseRepository $expenseRepository,
         private GroupRepository $groupRepository,
-        private SettlementRequestRepository $settlementRequestRepository
+        private SettlementRequestRepository $settlementRequestRepository,
+        private NotificationService $notificationService
     ) {}
 
     public function getAllByGroup(string $groupId, string $userId)
@@ -70,7 +71,9 @@ class GroupExpenseService
             $this->expenseRepository->createSplits($expense->id, $splitsData['splits']);
 
 
-            return $this->expenseRepository->findById($expense->id);
+            $expense=$this->expenseRepository->findById($expense->id);
+            $this->notifyExpenseMembers($expense);
+            return $expense;
         });
     }
 
@@ -474,5 +477,32 @@ class GroupExpenseService
         ];
 
 
+    }
+
+
+    //for gp expense notification
+    private function notifyExpenseMembers($expense): void
+    {
+    $payer       = $expense->payer;
+    $description = $expense->description ?? 'Expense';
+    $amount      = number_format($expense->amount);
+
+        foreach ($expense->splits as $split) {
+            if ($split->user_id === $expense->paid_by) {
+                continue;
+            }
+
+            $this->notificationService->sendToUser(
+                $split->user,
+                '💸 New Group Expense',
+                "{$payer->name} paid {$amount} Ks for \"{$description}\". You owe {$split->amount_owed} Ks.",
+                [
+                    'type'       => 'group_expense_created',
+                    'expense_id' => $expense->id,
+                    'group_id'   => $expense->group_id,
+                    'amount_owed' => (string) $split->amount_owed,
+                ]
+            );
+        }
     }
 }
