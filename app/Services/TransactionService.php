@@ -135,7 +135,10 @@ class TransactionService
             throw new \Exception('only pending transactions can be accepted!',422);
         }
 
-        $updated=$this->transactionRepository->update($transaction,['status'=>'confirmed']);
+        $updated=$this->transactionRepository->update($transaction,[
+            'status'=>'confirmed',
+            'created_at' => now(),
+            ]);
 
         if ($updated->type === 'expense') {
 
