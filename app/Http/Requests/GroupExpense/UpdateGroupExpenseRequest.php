@@ -32,7 +32,7 @@ class UpdateGroupExpenseRequest extends FormRequest
         'include_payer' => ['sometimes', 'boolean'],
         'splits' => ['required_if:split_type,custom', 'array'],
         'splits.*.user_id' => ['required_with:splits', 'string'],
-        'splits.*.amount' => ['required_with:splits', 'integer', 'min:1'],
+        'splits.*.amount_owed' => ['required_with:splits', 'integer', 'min:1'],
         ];
     }
 }

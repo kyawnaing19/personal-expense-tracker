@@ -247,7 +247,6 @@ class GroupExpenseService
             if (empty($data['splits'])) {
                 throw new \Exception('Custom split requires split data', 422);
             }
-
         foreach ($data['splits'] as $split){
             if(!isset($split['user_id']) || !isset($split['amount_owed'])){
                 throw new \Exception('Each split must have user_id and amount_owed',422);
@@ -258,37 +257,43 @@ class GroupExpenseService
 
     // for update
     private function recalculateSplits($expense, array $data): void
-    {
-        $newSplits = $this->calculateSplits($expense, array_merge([
-            'split_type' => $expense->split_type,
-            'include_payer' => $expense->include_payer,
-        ], $data, ['amount' => $expense->amount]));
+{
+    $splitsData = $this->calculateSplits($expense, array_merge([
+        'split_type' => $expense->split_type,
+        'include_payer' => $expense->include_payer,
+    ], $data, ['amount' => $expense->amount]));
 
-        foreach ($newSplits as $newSplit) {
-            $existing = $this->expenseRepository->findSplit($expense->id, $newSplit['user_id']);
-            if ($existing) {
-                $isSettled = $existing->amount_paid >= $newSplit['amount_owed'];
-                $this->expenseRepository->updateSplit($existing, [
-                    'amount_owed' => $newSplit['amount_owed'],
-                    'is_settled' => $isSettled,
-                ]);
-            } else {
-                // for new member (or changing include_payer)
-                $this->expenseRepository->createSplits($expense->id, [$newSplit]);
-            }
+    // Update the parent expense record with the newly calculated include_payer flag
+    $expense->update([
+        'include_payer' => $splitsData['include_payer']
+    ]);
 
-        }
+    // 1. Update existing splits or create new ones
+    foreach ($splitsData['splits'] as $newSplit) {
+        $existing = $this->expenseRepository->findSplit($expense->id, $newSplit['user_id']);
 
-        // in inital state, the user's split has in list. Now, not include in list(to delete split that not include in newSPlits)
-
-        $currentUserIds = array_column($newSplits, 'user_id');
-        $allSplits = $this->expenseRepository->getSplitsByExpense($expense->id);
-        foreach ($allSplits as $split) {
-            if (! in_array($split->user_id, $currentUserIds)) {
-                $split->delete();
-            }
+        if ($existing) {
+            $isSettled = $existing->amount_paid >= $newSplit['amount_owed'];
+            $this->expenseRepository->updateSplit($existing, [
+                'amount_owed' => $newSplit['amount_owed'],
+                'is_settled' => $isSettled,
+            ]);
+        } else {
+            $this->expenseRepository->createSplits($expense->id, [$newSplit]);
         }
     }
+
+    // 2. Remove old members who are no longer included in the new splits list
+    $currentUserIds = array_column($splitsData['splits'], 'user_id');
+    $allSplits = $this->expenseRepository->getSplitsByExpense($expense->id);
+
+    foreach ($allSplits as $split) {
+        if (! in_array($split->user_id, $currentUserIds)) {
+            $split->delete();
+        }
+    }
+}
+
 
     // ----Settlement Logic------
     public function claimPayment(string $splitId, int $amount, string $claimantId)
