@@ -111,22 +111,29 @@ use Hamcrest\Core\Set;
                             ->keyBy('user_id');
     }
     //tu myar ko pyan pay ya mal a kyay detail
-    public function getActiveDebtorDetail(string $userId)
+    // ExpenseRepository ထဲတွင်
+    public function getActiveDebtorDetail(string $userId, string $groupId)
     {
-        return ExpenseSplit::where('user_id',$userId)
-                            ->where('is_settled',false)
-                            ->with(['groupExpense.payer','groupExpense.category'])
+        return ExpenseSplit::where('user_id', $userId)
+                            ->where('is_settled', false)
+                            ->whereHas('groupExpense', function($query) use ($groupId) {
+                                $query->where('group_id', $groupId);
+                            })
+                            ->with(['groupExpense.payer', 'groupExpense.category'])
                             ->get();
     }
+
     //thu pay htar p thu pyan ya mal a kyay detail
-    public function getActivePayerDetails(string $userId)
+     public function getActivePayerDetails(string $userId, string $groupId)
     {
-        return ExpenseSplit::whereHas('groupExpense', function($query) use ($userId){
-                $query->where('paid_by',$userId);
+        return ExpenseSplit::whereHas('groupExpense', function($query) use ($userId, $groupId){
+                $query->where('paid_by', $userId)
+                    ->where('group_id', $groupId);
         })
-        ->where('is_settled',false)
-        ->with(['user','groupExpense'])
+        ->where('is_settled', false)
+        ->with(['user', 'groupExpense'])
         ->get();
     }
+
 
  }

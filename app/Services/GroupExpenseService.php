@@ -431,8 +431,8 @@ class GroupExpenseService
         if(!$this->groupRepository->isMember($groupId,$requesterId)){
             throw new \Exception('you are not a member of this group',403);
         }
-        $debtorsDetails=$this->expenseRepository->getActiveDebtorDetail($tergetUserId);
-        $payerDetails=$this->expenseRepository->getActivePayerDetails($tergetUserId);
+        $debtorsDetails=$this->expenseRepository->getActiveDebtorDetail($tergetUserId, $groupId);
+        $payerDetails=$this->expenseRepository->getActivePayerDetails($tergetUserId, $groupId);
 
         return [
             'owed_to_others' => $debtorsDetails->map(function ($split){
