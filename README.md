@@ -1,66 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+ # 💰 Shwe Shaung — Personal & Group Expense Tracker API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A production-ready REST API built with **Laravel 11** for tracking personal and group expenses. Features Google OAuth authentication, budget management with push notifications, recurring transactions, and a full group expense splitting system.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Features
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+### Personal Expense Tracking
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- Google OAuth 2.0 Authentication (via Sanctum)
 
-## Contributing
+- Transaction management with receipt image upload
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Custom & default expense/income categories
 
-## Code of Conduct
+- Monthly budget management with alert thresholds
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Recurring transactions (daily/weekly/monthly) with Laravel Scheduler
 
-## Security Vulnerabilities
+- Pending/Confirmed/Rejected transaction workflow
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Firebase FCM push notifications (budget alerts, recurring reminders)
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+### Group Expense Tracking
+
+- Create groups with admin/member roles
+
+- Join via time-limited 6-digit code or admin direct invite
+
+- Equally or custom expense splitting
+
+- Partial payment settlement with payer confirmation flow
+
+- Group balance overview (receivable/payable per member)
+
+- Settlement history & audit trail
+
+- FCM notifications for new expenses, settlements, and member joins
+
+
+
+### Reports & Analytics
+
+- Summary by date range (today/yesterday/this month/last month/custom)
+
+- Category breakdown with percentages (income & expense)
+
+- Budget vs actual spending overview
+
+
+
+---
+
+
+
+## 🛠️ Tech Stack
+
+
+
+| Layer | Technology |
+
+|---|---|
+
+| Framework | Laravel 11 |
+
+| Language | PHP 8.2 |
+
+| Database | MySQL 8.0 |
+
+| Authentication | Laravel Sanctum + Google OAuth 2.0 |
+
+| Push Notification | Firebase Admin SDK (kreait/laravel-firebase) |
+
+| File Storage | Laravel Storage (local/public) |
+
+| Architecture | Repository → Service → Controller pattern |
+
+| Primary Keys | ULID |
+
+| Task Scheduling | Laravel Scheduler |
+
+
+
+---
+
+## 📦 Installation
+
+
+
+### Requirements
+
+- PHP >= 8.2
+
+- Composer
+
+- MySQL 8.0
+
+- Firebase Project (for push notifications)
+
+
+## 🔑 Authentication Flow
+
+
+
+Flutter App
+
+│
+
+▼
+
+Google Sign-In → ID Token
+
+│
+
+▼
+
+POST /api/v1/auth/google
+
+│
+
+▼
+
+Laravel verifies token → Creates/finds user → Returns Sanctum token
+
+│
+
+▼
+
+Flutter stores token → Uses as Bearer token for all requests
+
+
+
+---
+
+## 🔔 Push Notification Types
+
+
+
+| Type | Trigger | Recipients |
+
+|---|---|---|
+
+| budget_warning | Spending reaches alert threshold | Transaction creator |
+
+| budget_exceeded | Spending exceeds budget | Transaction creator |
+
+| group_expense_created | New group expense logged | Affected split members |
+
+| settlement_claim | Payment claimed | Expense payer |
+
+| settlement_confirmed | Payment confirmed | Claimant |
+
+| settlement_rejected | Payment rejected | Claimant |
+
+| member_invited | Admin adds member | New member + existing members |
+
+| member_joined | Member joins via code | New member + existing members |
+
+
+
+---
+
+
+
+## 👤 Author
+
+
+
+**Kyaw Kyaw Naing**
+
+Internship Project — Za Information Technology Co., Ltd.
+
+University of Computer Studies, Thaton (UCSTT)
+
+
+
+---
+
+
+
+## 📄 License
+
+
+
+MIT License
