@@ -44,8 +44,8 @@ class TransactionService
                 'to'   => $filters['to'] ?? Carbon::now()->endOfMonth()->toDateString()
             ],
             default => [
-                'from' => Carbon::now()->startOfMonth()->toDateString(),
-                'to'   => Carbon::now()->endOfMonth()->toDateString()
+                'from' => null,
+                'to'   => null
             ]
         };
     }

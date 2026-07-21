@@ -12,7 +12,14 @@ class TransactionRepository
     {
         $query = Transaction::where('user_id', $userId)
                             ->where('status', 'confirmed');
-        $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
+
+        if (!empty($filters['from']) && !empty($filters['to'])) {
+        $query->whereBetween('created_at', [
+            $filters['from'] . ' 00:00:00',
+            $filters['to'] . ' 23:59:59'
+        ]);
+        }
+
         if (!empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
