@@ -80,7 +80,7 @@ class TransactionService
 
         $data['type']=$category->type;
         $data['user_id']=$userId;
-        //$data['transaction_date']=now()->format('Y-m-d');
+        $data['transaction_date']=now()->format('Y-m-d');
         $transaction=$this->transactionRepository->create($data);
 
         //budget Alert Check

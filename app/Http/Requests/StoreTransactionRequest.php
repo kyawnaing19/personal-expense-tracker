@@ -26,7 +26,6 @@ class StoreTransactionRequest extends FormRequest
             'amount'=>['required',''],
             'note'=>['sometimes','string'],
             'receipt_path'=>['sometimes','string'],
-            'transaction_date'=>['required','date'],
 
         ];
     }
