@@ -12,7 +12,7 @@ class TransactionRepository
     {
         $query = Transaction::where('user_id', $userId)
                             ->where('status', 'confirmed');
-        $query->whereBetween('transaction_date', [$filters['from'], $filters['to']]);
+        $query->whereBetween('created_at', [$filters['from'], $filters['to']]);
         if (!empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }
@@ -20,7 +20,7 @@ class TransactionRepository
             $query->where('type', $filters['type']);
         }
 
-        return $query->orderBy('transaction_date', 'desc')->get();
+        return $query->orderBy('created_at', 'desc')->get();
     }
 
     public function getRecurringTransactionsByUser(string $userID)
