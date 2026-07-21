@@ -23,7 +23,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required','string'],
+            'name'=>['required','string','max:30'],
             'type'=>['required',Rule::in(['income','expense'])],
             'icon'=>['required','string'],
             'color'=>['required','string'],

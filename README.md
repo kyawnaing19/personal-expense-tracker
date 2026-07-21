@@ -1,4 +1,4 @@
- # 💰 Shwe Shaung — Personal & Group Expense Tracker API
+ # 💰 Shwee Shaung — Personal & Group Expense Tracker API
 
 
 
