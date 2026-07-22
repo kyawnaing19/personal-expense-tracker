@@ -40,10 +40,6 @@ class CategoryRepository
 
     public function delete(Category $category)
     {
-
-        if ($category->transactions()->exists()) {
-        throw new \Exception();
-        }
         $category->delete();
         return true;
     }
