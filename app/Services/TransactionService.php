@@ -162,6 +162,6 @@ class TransactionService
         if($transaction->status!=='pending'){
             throw new \Exception('only pending transactions can be rejected!',422);
         }
-        return $this->transactionRepository->update($transaction,['status'=>'rejected']);
+        return $this->transactionRepository->delete($transaction);
     }
 }
