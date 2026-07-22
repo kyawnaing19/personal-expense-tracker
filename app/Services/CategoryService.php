@@ -56,7 +56,7 @@ class CategoryService
             {
                 throw new \Exception('default category cannot delete!',403);
             };
-        if ($category->transactions()->exists()) {
+        if ($category->transactions()->whereIn('status', ['confirmed', 'pending'])->exists()) {
         throw new \Exception('Cannot delete category with associated transactions!');
         }
         if($category->recurringTransactions()->exists()){
