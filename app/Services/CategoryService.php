@@ -47,7 +47,7 @@ class CategoryService
 
     public function delete(string $id,string $userId)
     {
-           $category=$this->categoryRepository->findById($id, $userId);
+        $category=$this->categoryRepository->findById($id, $userId);
         if (!$category)
             {
             throw new \Exception('category not found!',404);
@@ -56,6 +56,15 @@ class CategoryService
             {
                 throw new \Exception('default category cannot delete!',403);
             };
+        if ($category->transactions()->exists()) {
+        throw new \Exception('Cannot delete category with associated transactions!');
+        }
+        if($category->recurringTransactions()->exists()){
+            throw new \Exception('Cannot delete category with associated recurring transactions!');
+        }
+        if($category->budgets()->exists()){
+            throw new \Exception('Cannot delete category with associated budgets!');
+        }
 
         return $this->categoryRepository->delete($category);
 

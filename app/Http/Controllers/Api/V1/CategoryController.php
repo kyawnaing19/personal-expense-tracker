@@ -91,12 +91,19 @@ class CategoryController extends Controller
             ]);
 
         }
-        catch(\Exception $e){
-              return response()->json([
-                 'success' => false,
-                'message' => $e->getMessage(),
-            ], (int)$e->getCode() ?: 500);
+        catch (\Exception $e) {
 
+
+            $statusCode = (int) $e->getCode();
+
+                if ($statusCode < 200 || $statusCode >= 600) {
+                $statusCode = 500;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], $statusCode);
         }
     }
 
