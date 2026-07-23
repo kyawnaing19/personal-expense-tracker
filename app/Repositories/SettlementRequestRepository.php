@@ -39,26 +39,29 @@ class SettlementRequestRepository
     }
 
     //User(Debtor)'s confirm-setlled history
-    public function getConfirmedAsDebtor(string $userId)
+    public function getConfirmedAsDebtor(string $userId,string $groupId)
     {
         return SettlementRequest::where('claimed_by',$userId)
                                 ->where('status','confirmed')
+                                ->whereHas('expenseSplit.groupExpense', function($query) use ($groupId) {
+                                $query->where('group_id', $groupId);
+                                })
                                 ->with(['expenseSplit.groupExpense.payer','expenseSplit.groupExpense.category'])
                                 ->orderBy('confirmed_at','desc')
                                 ->get();
     }
 
     //User(payer) comfirm-history from user(debtor)' setlle Request
-    public function getConfirmedAsPayer(string $userId)
+    public function getConfirmedAsPayer(string $userId,string $groupId)
     {
-        return SettlementRequest::whereHas('expenseSplit.groupExpense',
-        function ($query) use ($userId){
-            $query->where('paid_by',$userId);
-        })
-        ->where('status','confirmed')
-        ->with(['expenseSplit.user','expenseSplit.groupExpense'])
-        ->orderBy('confirmed_at','desc')
-        ->get();
+        return SettlementRequest::whereHas('expenseSplit.groupExpense', function ($query) use ($userId, $groupId) {
+                $query->where('paid_by', $userId)
+                      ->where('group_id', $groupId);
+                })
+                ->where('status','confirmed')
+                ->with(['expenseSplit.user','expenseSplit.groupExpense'])
+                ->orderBy('confirmed_at','desc')
+                ->get();
     }
 
     //(paid_by)  requests

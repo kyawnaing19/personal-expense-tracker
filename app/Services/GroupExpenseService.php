@@ -466,8 +466,8 @@ class GroupExpenseService
             throw new \Exception('you are not a member of this group',403);
         }
 
-        $debtorHistory=$this->settlementRequestRepository->getConfirmedAsDebtor($tergetUserId);
-        $payerHistory=$this->settlementRequestRepository->getConfirmedAsPayer($tergetUserId);
+        $debtorHistory=$this->settlementRequestRepository->getConfirmedAsDebtor($tergetUserId,$groupId);
+        $payerHistory=$this->settlementRequestRepository->getConfirmedAsPayer($tergetUserId,$groupId);
 
         return [
             'paid_to_others'=>$debtorHistory->map(function ($request){
